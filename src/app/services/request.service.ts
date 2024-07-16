@@ -7,14 +7,15 @@ import { PORT } from '../environment/environment';
   providedIn: 'root'
 })
 export class RequestService {
+
   constructor(private http: HttpClient) {}
 
    //CRUD requests
-   fetchData<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(PORT + '/GC-FaMS-API/API/' + endpoint);
+  fetchData<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(PORT + '/blog_site_api/API/' + endpoint);
   }
 
   postData<T>(data: FormData, endpoint: string): Observable<T> {
-    return this.http.post<T>(PORT + '/GC-FaMS-API/API/' + endpoint, data);
+    return this.http.post<T>(PORT + '/blog_site_api/API/' + endpoint, data);
   }
 }
