@@ -1,11 +1,24 @@
 <app-topnav></app-topnav>
 <div class="px-5">
-  <div class="flex gap-2">
-    <span class="p-1 bg-slate-300 text-white">Food</span>
-    <span class="p-1 bg-slate-300 text-white">Tech</span>
+  <div class="flex gap-2" *ngIf="$tagSub | async as tags">
+    @for (tag of tags.data; track $index) {
+    <span class="p-1 bg-slate-300 text-white">{{ tag.tagTitle }}</span>
+    }
   </div>
   <div class="flex flex-row">
-    <div class="w-[60%]">first</div>
+    <div class="w-[60%]" *ngIf="$blogSub | async as blogs">
+      @for (blog of blogs.data; track $index) {
+      <div>
+        <h4>{{ blog.blogTitle }}</h4>
+        <quill-view
+          [content]="blog.blogContent"
+          format="html"
+          theme="snow"
+          [sanitize]="true"
+        ></quill-view>
+      </div>
+      }
+    </div>
     <div class="w-[40%]">2nd</div>
   </div>
 </div>

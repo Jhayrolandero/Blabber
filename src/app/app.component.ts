@@ -10,4 +10,18 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'blog_site';
+  // tags = [
+  //   {
+  //     id: 1,
+  //     title: "Food"
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Fashion"
+  //   },
+  //   {
+  //     id: 3,
+  //     title:
+  //   }
+  //   "Fashion", "Music", "Technology", "Health", "Travel", "Other", "Science"]
 }

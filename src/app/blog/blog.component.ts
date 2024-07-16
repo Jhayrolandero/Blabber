@@ -4,11 +4,14 @@ import { QuillModule } from 'ngx-quill';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { FormdataService } from '../services/formdata.service';
 import { RequestService } from '../services/request.service';
-
+import { Observable, Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { TagRes } from '../interface/TagRes';
+import { Tag } from '../interface/TagRes';
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [TopnavComponent, QuillModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, TopnavComponent, QuillModule, FormsModule, ReactiveFormsModule],
   templateUrl: './blog.component.html',
   styleUrl: './blog.component.css'
 })
@@ -20,11 +23,24 @@ export class BlogComponent {
   ) {}
   blogForm = new FormGroup({
     blogTitle: new FormControl('', [Validators.required]),
-    blogContent: new FormControl('')
+    blogContent: new FormControl(''),
+    tagID: new FormControl(0, [Validators.required])
   })
 
+  $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
   text = ""
 
+  ngOnInit() {
+    this.$tagSub.subscribe(res => console.log(res))
+  }
+
+  selectTag(event : Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    console.log(selectElement.value);
+    this.blogForm.patchValue({
+      tagID: +selectElement.value
+    })
+  }
   onSubmit() {
     this.blogForm.patchValue({
       blogContent:this.text
