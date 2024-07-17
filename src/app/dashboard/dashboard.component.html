@@ -1,1 +1,39 @@
-<p>dashboard works!</p>
+<app-topnav></app-topnav>
+<div class="flex gap-2 min-h-[95vh]" *ngIf="$blogSub | async as blogs">
+  <div
+    class="w-[20%] min-h-full shadow-md flex flex-col items-center py-5 gap-2"
+  >
+    <img src="" alt="Profile Image" />
+    <h4>{{ blogs.data[0].authorName }}</h4>
+    <button (click)="createBlog()">Create Post +</button>
+  </div>
+  <div class="w-full">
+    <div class="px-10 mx-auto">
+      @for (blog of blogDisplay; track $index) {
+      <div
+        (click)="readBlog(blog.blogID)"
+        class="border-b-2 border-b-[#353535] grid grid-cols-3 max-h-[200px] gap-3 py-3 cursor-pointer shadow-md rounded-md mb-4"
+      >
+        <div class="flex flex-col">
+          <h4>{{ blog.tagID }}</h4>
+          <p class="text-[1.5rem] font-bold">
+            {{ blog.blogTitle }}
+          </p>
+          <small>{{ blog.author }}</small>
+          <small>{{ blog.blogCreated }}</small>
+        </div>
+        <div>
+          <p class="text-ellipsis overflow-hidden max-h-[160px]">
+            {{ blog.sumContent }}
+          </p>
+        </div>
+        <img
+          [src]="blog.imgSRC"
+          alt="img"
+          class="max-h-[160px] w-full aspect-video"
+        />
+      </div>
+      }
+    </div>
+  </div>
+</div>

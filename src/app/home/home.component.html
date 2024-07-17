@@ -1,51 +1,85 @@
 <app-topnav></app-topnav>
-<div class="px-10">
+<div class="px-10 mt-2 bg-[#080808] max-w-[2560px]">
   <div class="flex gap-2" *ngIf="$tagSub | async as tags">
     @for (tag of tags.data; track $index) {
-    <span class="p-1 bg-slate-300 text-white">{{ tag.tagTitle }}</span>
+    <button class="p-1 bg-slate-300 text-white">{{ tag.tagTitle }}</button>
     }
+    <hr class="text-black" />
   </div>
-  <div class="flex flex-row">
+  <div class="flex flex-row text-[#9b9ba8]">
     <div
-      class="w-[60%] flex flex-col gap-2 cursor-pointer"
+      class="w-[70%] flex flex-col gap-2 cursor-pointer"
       *ngIf="$blogSub | async as blogs"
     >
-      @for (blog of blogDisplay; track $index) {
-      <div
-        (click)="readBlog(blog.blogID)"
-        class="border-b-2 border-black grid grid-cols-3 max-h-[200px] gap-3 py-3"
-      >
-        <div class="flex flex-col">
-          <h4>{{ blog.tagID }}</h4>
-          <p class="text-[1.5rem] font-bold">
-            {{ blog.blogTitle }}
-          </p>
-          <small>{{ blog.author }}</small>
-          <small>{{ blog.blogCreated }}</small>
+      <h2 class="text-[2rem]">Educational</h2>
+
+      <h3 class="text-[1.5rem]">Featured</h3>
+      <hr class="text-[#353535] mb-2" />
+      <div class="flex gap-4">
+        @for(feature of featureDisplay; track $index) {
+        <div
+          class="w-[50%] min-h-[480px] max-h-[540px] bg-[#353535] rounded-md cursor-default"
+        >
+          <div class="relative">
+            <img
+              [src]="feature.imgSRC"
+              alt="img"
+              class="w-full aspect-video mb-2"
+            />
+            <span
+              class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
+              >tagID</span
+            >
+          </div>
+          <div class="px-2">
+            <p>
+              <span>{{ feature.author }} | {{ feature.blogCreated }}</span>
+            </p>
+            <p class="text-[2rem]">{{ feature.blogTitle }}</p>
+            <p class="text-ellipsis overflow-hidden max-h-[40px]">
+              {{ feature.sumContent }}
+            </p>
+            <button
+              class="text-[#ac8cfc] text-[1.25rem]"
+              (click)="readBlog(feature.blogID)"
+            >
+              Read Blog
+            </button>
+          </div>
         </div>
-        <div>
-          <p class="text-ellipsis overflow-hidden max-h-[160px]">
-            {{ blog.sumContent }}
-          </p>
-        </div>
-        <!-- <quill-view
-          [content]="blog.sumContent"
-          format="text"
-          theme="snow"
-          [sanitize]="true"
-          class="text-[5rem]"
-        ></quill-view> -->
-        <!-- <p>{{ blog.imgSRC }}</p> -->
-        <img
-          [src]="blog.imgSRC"
-          alt="img"
-          class="max-h-[160px] w-full aspect-video"
-        />
+        }
       </div>
-      }
+      <h2>Read More</h2>
+      <hr class="text-[#353535] mb-2" />
+      <div class="grid grid-cols-3 gap-4">
+        @for (blog of blogDisplay; track $index) {
+        <div
+          (click)="readBlog(blog.blogID)"
+          class="min-h-[280px] bg-[#353535] rounded-md"
+        >
+          <div class="relative">
+            <img
+              [src]="blog.imgSRC"
+              alt="imagelol"
+              class="w-full aspect-video mb-2"
+            />
+            <span
+              class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
+              >tagID</span
+            >
+          </div>
+          <div class="px-2">
+            <p>
+              <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
+            </p>
+            <h4>{{ blog.blogTitle }}</h4>
+          </div>
+        </div>
+        }
+      </div>
     </div>
-    <div class="w-[40%]">
-      <h4>Latest</h4>
+    <div class="w-[30%]">
+      <h4 class="text-lg font-bold">Latest</h4>
     </div>
   </div>
 </div>

@@ -9,6 +9,7 @@ export interface Blog {
   authorName: string
   email: string
   author_blogID: number
+  public: boolean
 }
 
 

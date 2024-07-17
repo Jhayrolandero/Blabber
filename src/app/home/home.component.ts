@@ -39,30 +39,47 @@ export class HomeComponent {
   // events: string[] = [];
   opened: boolean = true;
   blogDisplay: BlogDisplay[] = []
-
+  featureDisplay: BlogDisplay[] = []
   router = inject(Router);
 
   ngOnInit() {
     this.$blogSub.subscribe(res => {
       res.data.map(x => {
-        const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
-        const data: BlogDisplay = {
-          sumContent: textContent!,
-          author: x.authorName,
-          tagID: x.tagID,
-          blogTitle: x.blogTitle,
-          imgSRC: firstImageSrc!,
-          blogCreated: x.blogCreatedDate,
-          blogID: x.author_blogID
+        if(x.public) {
+          const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
+          const data: BlogDisplay = {
+            sumContent: textContent!,
+            author: x.authorName,
+            tagID: x.tagID,
+            blogTitle: x.blogTitle,
+            imgSRC: firstImageSrc!,
+            blogCreated: x.blogCreatedDate,
+            blogID: x.author_blogID
+          }
+          this.blogDisplay.push(data)
         }
-        this.blogDisplay.push(data)
+
       })
+      this.getFeatureDisplay(this.blogDisplay, this.featureDisplay, 2)
     })
   }
 
   readBlog(id: number) {
     this.router.navigate(['read/', id])
   }
+
+  getFeatureDisplay(source: BlogDisplay[], destination: BlogDisplay[], count: number) {
+    if (source.length < count) {
+        console.error("Source array does not have enough items.");
+        return;
+    }
+
+    for (let i = 0; i < count; i++) {
+        // Select a random index
+        const randomIndex = Math.floor(Math.random() * source.length);
+        destination.push(source.splice(randomIndex, 1)[0]);
+    }
+}
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog")
