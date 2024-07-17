@@ -1,7 +1,9 @@
 <div class="flex h-screen">
   <div class="w-[40%] flex flex-col h-full justify-center items-center">
     <form class="w-96 flex flex-col items-center" [formGroup]="loginForm">
-      <h4 class="text-[2rem] font-bold">Blabber</h4>
+      <h4 class="text-[2rem] font-bold cursor-pointer" (click)="home()">
+        Blabber
+      </h4>
       <div class="relative z-0 w-full mb-5 group">
         <input
           type="email"

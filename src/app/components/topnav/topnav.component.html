@@ -5,6 +5,7 @@
   >
     Blabber
   </h4>
+  @if(userAuth()) {
   <button
     mat-icon-button
     [matMenuTriggerFor]="menu"
@@ -20,4 +21,7 @@
       <span>Logout</span>
     </button>
   </mat-menu>
+  } @else {
+  <button (click)="login()">Login</button>
+  }
 </div>

@@ -34,6 +34,10 @@ export class LoginComponent {
 
   router = inject(Router);
 
+  home() {
+    this.router.navigate(['home'])
+  }
+
   submitForm() {
     console.log(this.loginForm.valid)
 

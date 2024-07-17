@@ -31,16 +31,16 @@
               onerror="this.onerror=null; this.src='/assets/images.png'"
             />
             <span
-              class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
+              class="absolute top-[4px] left-0 bg-black opacity-80 text-white px-2 py-1 rounded-tr-full rounded-br-full text-[0.8rem]"
               >{{ translateTag(feature.tagID) }}</span
             >
           </div>
           <div class="px-2">
             <hr class="text-[#353535] mb-2" />
-            <p>
+            <small>
               <span>{{ feature.author }} | {{ feature.blogCreated }}</span>
-            </p>
-            <p class="text-[2rem]">{{ feature.blogTitle }}</p>
+            </small>
+            <h5 class="text-[1.75rem] font-bold">{{ feature.blogTitle }}</h5>
             <p class="text-ellipsis overflow-hidden max-h-[40px]">
               {{ feature.sumContent }}
             </p>
@@ -48,7 +48,7 @@
               class="text-[#ac8cfc] text-[1.25rem]"
               (click)="readBlog(feature.blogID)"
             >
-              Read Blog
+              <span>Read Blog <i class="fa-solid fa-arrow-right"></i></span>
             </button>
           </div>
         </div>
@@ -74,10 +74,10 @@
           <div class="px-2">
             <hr class="text-[#353535] mb-2" />
 
-            <p>
+            <small>
               <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
-            </p>
-            <h4>{{ blog.blogTitle }}</h4>
+            </small>
+            <h5 class="text-[1rem] font-bold">{{ blog.blogTitle }}</h5>
           </div>
         </div>
         }

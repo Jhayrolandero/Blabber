@@ -98,15 +98,14 @@ export class HomeComponent {
 
 filterBlog(id: number) {
   if (id === 0) {
-    // Reset to original display
-    this.blogDisplay = [...this.origDisplay];  // Create a new copy of origDisplay
-    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
-    this.latestDisplay = [...this.origDisplay]; // Create a new copy of origDisplay for latest display
+    this.blogDisplay = [...this.origDisplay];
+    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+    this.latestDisplay = [...this.origDisplay];
   } else {
     // Filter by tagID
-    this.blogDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter blogDisplay by tagID
-    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
-    this.latestDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter latestDisplay by tagID
+    this.blogDisplay = this.origDisplay.filter(x => x.tagID === id);
+    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+    this.latestDisplay = this.origDisplay.filter(x => x.tagID === id);
   }
 
   this.currTag = this.translateTag(id)

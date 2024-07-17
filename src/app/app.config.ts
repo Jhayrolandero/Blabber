@@ -1,11 +1,22 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
+import Quill from 'quill';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideQuillConfig, QuillModule } from 'ngx-quill';
+import { provideQuillConfig } from 'ngx-quill';
 import { loggingInterceptor } from './services/auth.interceptor';
+import BlotFormatter from 'quill-blot-formatter';
+import CustomImage from './QuillImage/ImageAlignment';
+
+// This is for image resizer
+Quill.register('modules/blotFormatter', BlotFormatter)
+
+// Enable the image alignment to be save
+Quill.register({
+ 'formats/image': CustomImage
+});
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +26,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([loggingInterceptor])),
     provideQuillConfig({
       modules: {
+        blotFormatter: {
+          overlay: {
+            style: {
+              border: '1px solid white',
+            }
+          }
+        },
         syntax: true,
         toolbar: [
         ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -36,8 +54,7 @@ export const appConfig: ApplicationConfig = {
         ['clean'],                                         // remove formatting button
 
         ['link', 'image', 'video']
-      ],
-
-      }
+      ]
+          }
     })]
 };

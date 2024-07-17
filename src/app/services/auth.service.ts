@@ -17,4 +17,8 @@ export class AuthService {
     this.cookieService.delete('token', '/');
   }
 
+  isAuth() {
+    return this.getToken().length > 0
+  }
+
 }

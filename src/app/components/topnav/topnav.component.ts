@@ -19,8 +19,16 @@ export class TopnavComponent {
     this.router.navigate(['home'])
   }
 
+  login() {
+    this.router.navigate(['login'])
+  }
+
   dashboard() {
     this.router.navigate(['dashboard'])
+  }
+
+  userAuth() {
+    return this.AuthService.isAuth()
   }
 
   logout() {
