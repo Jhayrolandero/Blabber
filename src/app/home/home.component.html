@@ -28,6 +28,7 @@
               [src]="feature.imgSRC"
               alt="img"
               class="w-full aspect-video mb-2"
+              onerror="this.onerror=null; this.src='/assets/images.png'"
             />
             <span
               class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
@@ -63,6 +64,7 @@
               [src]="blog.imgSRC"
               alt="imagelol"
               class="w-full aspect-video mb-2"
+              onerror="this.onerror=null; this.src='/assets/images.png'"
             />
             <span
               class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
@@ -101,6 +103,7 @@
             [src]="latest.imgSRC"
             alt="img"
             class="max-w-[80px] aspect-square flex-1"
+            onerror="this.onerror=null; this.src='/assets/images.png'"
           />
         </div>
         }

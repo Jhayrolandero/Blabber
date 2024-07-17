@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MatDialogContent } from '@angular/material/dialog';
+import { Component, inject } from '@angular/core';
+import { MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { FormdataService } from '../../services/formdata.service';
 import { RequestService } from '../../services/request.service';
@@ -18,6 +18,7 @@ export class RegisterFormComponent {
     private RequestService: RequestService
   ) {}
 
+  readonly dialogRef = inject(MatDialogRef<RegisterFormComponent>);
   registerForm = new FormGroup({
     authorName: new FormControl('',Validators.required),
     email: new FormControl('',[Validators.required, Validators.email]),
@@ -30,8 +31,13 @@ export class RegisterFormComponent {
     const formData = this.FormDataService.formDatanalize(this.registerForm);
 
     this.RequestService.postData<any>(formData, "register").subscribe({
-      next: res => console.log(res),
-      error: err => console.error(err)
+      next: res => {
+        alert("Registered Successfully!")
+        this.dialogRef.close();
+      },
+      error: err => {
+        alert("Email is already Taken!")
+      }
     })
     console.log(formData)
   }

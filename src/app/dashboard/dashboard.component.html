@@ -19,7 +19,10 @@
         class="border-b-2 border-b-[#353535] grid grid-cols-3 max-h-[200px] gap-3 py-3 cursor-pointer shadow-md rounded-md mb-4"
       >
         <div class="flex flex-col">
-          <h4>{{ translate(blog.tagID) }} | {{ blog.public ? "Public" : "Private"}}</h4>
+          <h4>
+            {{ translate(blog.tagID) }} |
+            {{ blog.public ? "Public" : "Private" }}
+          </h4>
           <p class="text-[1.5rem] font-bold">
             {{ blog.blogTitle }}
           </p>
@@ -34,6 +37,7 @@
           [src]="blog.imgSRC"
           alt="img"
           class="max-h-[160px] w-full aspect-video"
+          onerror="this.onerror=null; this.src='/assets/images.png'"
         />
       </div>
       }

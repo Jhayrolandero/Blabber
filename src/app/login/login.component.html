@@ -1,7 +1,7 @@
 <div class="flex h-screen">
-  <div class="w-[70%] flex flex-col h-full justify-center items-center">
+  <div class="w-[40%] flex flex-col h-full justify-center items-center">
     <form class="w-96 flex flex-col items-center" [formGroup]="loginForm">
-      <h4 class="text-[2rem]">Blabber</h4>
+      <h4 class="text-[2rem] font-bold">Blabber</h4>
       <div class="relative z-0 w-full mb-5 group">
         <input
           type="email"
@@ -43,5 +43,11 @@
     <small>or</small>
     <button (click)="openDialog()">Register</button>
   </div>
-  <div class="w-[30%] bg-blue-500">Some Image</div>
+  <div class="w-[60%] bg-blue-500">
+    <img
+      class="object-cover h-full"
+      src="../../assets/dark-background-random-minimalist-abstract-illustration-for-logo-card-banner-web-and-printing-free-vector.jpg"
+      alt=""
+    />
+  </div>
 </div>

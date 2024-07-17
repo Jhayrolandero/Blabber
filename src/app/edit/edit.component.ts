@@ -29,7 +29,6 @@ export class EditComponent {
   blogData!: Blog
   $blogSub!: Subscription
   blogContent!: string
-
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}?q=fetchBlog`).subscribe({
