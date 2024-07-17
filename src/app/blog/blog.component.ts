@@ -31,7 +31,6 @@ export class BlogComponent {
   text = ""
 
   ngOnInit() {
-    this.$tagSub.subscribe(res => console.log(res))
   }
 
   selectTag(event : Event) {

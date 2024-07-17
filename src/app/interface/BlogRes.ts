@@ -5,6 +5,10 @@ export interface Blog {
   blogUpdatedDate: Date
   blogContent: string
   tagID: number
+  authorID: number
+  authorName: string
+  email: string
+  author_blogID: number
 }
 
 

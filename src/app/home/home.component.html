@@ -1,25 +1,52 @@
 <app-topnav></app-topnav>
-<div class="px-5">
+<div class="px-10">
   <div class="flex gap-2" *ngIf="$tagSub | async as tags">
     @for (tag of tags.data; track $index) {
     <span class="p-1 bg-slate-300 text-white">{{ tag.tagTitle }}</span>
     }
   </div>
   <div class="flex flex-row">
-    <div class="w-[60%]" *ngIf="$blogSub | async as blogs">
-      @for (blog of blogs.data; track $index) {
-      <div>
-        <h4>{{ blog.blogTitle }}</h4>
-        <quill-view
-          [content]="blog.blogContent"
-          format="html"
+    <div
+      class="w-[60%] flex flex-col gap-2 cursor-pointer"
+      *ngIf="$blogSub | async as blogs"
+    >
+      @for (blog of blogDisplay; track $index) {
+      <div
+        (click)="readBlog(blog.blogID)"
+        class="border-b-2 border-black grid grid-cols-3 max-h-[200px] gap-3 py-3"
+      >
+        <div class="flex flex-col">
+          <h4>{{ blog.tagID }}</h4>
+          <p class="text-[1.5rem] font-bold">
+            {{ blog.blogTitle }}
+          </p>
+          <small>{{ blog.author }}</small>
+          <small>{{ blog.blogCreated }}</small>
+        </div>
+        <div>
+          <p class="text-ellipsis overflow-hidden max-h-[160px]">
+            {{ blog.sumContent }}
+          </p>
+        </div>
+        <!-- <quill-view
+          [content]="blog.sumContent"
+          format="text"
           theme="snow"
           [sanitize]="true"
-        ></quill-view>
+          class="text-[5rem]"
+        ></quill-view> -->
+        <!-- <p>{{ blog.imgSRC }}</p> -->
+        <img
+          [src]="blog.imgSRC"
+          alt="img"
+          class="max-h-[160px] w-full aspect-video"
+        />
       </div>
       }
     </div>
-    <div class="w-[40%]">2nd</div>
+    <div class="w-[40%]">
+      <h4>Latest</h4>
+    </div>
   </div>
 </div>
 <!-- <quill-editor class="h-full" [(ngModel)]="text"></quill-editor>

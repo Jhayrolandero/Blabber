@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import {MatMenuModule} from '@angular/material/menu';
 
 @Component({
   selector: 'app-topnav',
   standalone: true,
-  imports: [],
+  imports: [MatMenuModule],
   templateUrl: './topnav.component.html',
   styleUrl: './topnav.component.css'
 })
 export class TopnavComponent {
+
+  router = inject(Router)
+
+  home() {
+    this.router.navigate(['home'])
+  }
 
 }
