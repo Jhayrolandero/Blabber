@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {MatMenuModule} from '@angular/material/menu';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-topnav',
@@ -11,6 +12,7 @@ import {MatMenuModule} from '@angular/material/menu';
 })
 export class TopnavComponent {
 
+  constructor(private AuthService: AuthService) {}
   router = inject(Router)
 
   home() {
@@ -22,6 +24,7 @@ export class TopnavComponent {
   }
 
   logout() {
+    this.AuthService.flushToken()
     this.router.navigate(['/'])
   }
 }

@@ -26,7 +26,7 @@ export class BlogComponent {
     blogTitle: new FormControl('', [Validators.required]),
     blogContent: new FormControl(''),
     tagID: new FormControl(1, [Validators.required]),
-    public: new FormControl(false, [Validators.required])
+    public: new FormControl(0, [Validators.required])
   })
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
@@ -41,6 +41,14 @@ export class BlogComponent {
     console.log(selectElement.value);
     this.blogForm.patchValue({
       tagID: +selectElement.value
+    })
+  }
+
+  onPublic(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    console.log(inputElement.checked);
+    this.blogForm.patchValue({
+      public: inputElement.checked ? 1 : 0
     })
   }
   onSubmit() {

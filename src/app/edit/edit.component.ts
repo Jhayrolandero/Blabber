@@ -41,7 +41,8 @@ export class EditComponent {
           this.blogForm.patchValue({
             blogTitle: res.data[0].blogTitle,
             blogContent: res.data[0].blogContent,
-            tagID: res.data[0].tagID
+            tagID: res.data[0].tagID,
+            public: res.data[0].public ? 1 : 0
           })
         },
         error: err => console.error(err)
@@ -52,7 +53,8 @@ export class EditComponent {
   blogForm = new FormGroup({
     blogTitle: new FormControl('', [Validators.required]),
     blogContent: new FormControl(''),
-    tagID: new FormControl(0, [Validators.required])
+    tagID: new FormControl(0, [Validators.required]),
+    public: new FormControl(0, [Validators.required])
   })
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
@@ -68,14 +70,27 @@ export class EditComponent {
     })
   }
 
+  onPublic(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    console.log(inputElement.checked);
+    this.blogForm.patchValue({
+      public: inputElement.checked ? 1 : 0
+    })
+  }
   onEdit() {
     this.blogForm.patchValue({
       blogContent: this.blogContent
     })
 
     this.Request.putData(`blog/${this.blogData.blogID}`, this.blogForm).subscribe({
-      next: res => console.log(res),
-      error: err => console.error(err)
+      next: res => {
+        console.log(res)
+        alert("Saved!")
+      },
+      error: err => {
+        console.error(err)
+      alert("Error!")
+      }
     })
   }
 

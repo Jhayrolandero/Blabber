@@ -1,11 +1,15 @@
 <app-topnav></app-topnav>
 <div class="flex gap-2 min-h-[95vh]" *ngIf="$blogSub | async as blogs">
   <div
-    class="w-[20%] min-h-full shadow-md flex flex-col items-center py-5 gap-2"
+    class="w-[20%] min-h-full shadow-md flex flex-col items-center py-5 gap-2 border-r-2 border-r-[#353535]"
   >
-    <img src="" alt="Profile Image" />
-    <h4>{{ blogs.data[0].authorName }}</h4>
-    <button (click)="createBlog()">Create Post +</button>
+    <h4 class="text-[1.25rem]">Welcome! {{ blogs.data[0].authorName }}</h4>
+    <button
+      (click)="createBlog()"
+      class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+    >
+      Create Post +
+    </button>
   </div>
   <div class="w-full">
     <div class="px-10 mx-auto">
@@ -15,12 +19,11 @@
         class="border-b-2 border-b-[#353535] grid grid-cols-3 max-h-[200px] gap-3 py-3 cursor-pointer shadow-md rounded-md mb-4"
       >
         <div class="flex flex-col">
-          <h4>{{ blog.tagID }}</h4>
+          <h4>{{ translate(blog.tagID) }} | {{ blog.public ? "Public" : "Private"}}</h4>
           <p class="text-[1.5rem] font-bold">
             {{ blog.blogTitle }}
           </p>
-          <small>{{ blog.author }}</small>
-          <small>{{ blog.blogCreated }}</small>
+          <small>{{ blog.author }} | {{ blog.blogCreated }}</small>
         </div>
         <div>
           <p class="text-ellipsis overflow-hidden max-h-[160px]">

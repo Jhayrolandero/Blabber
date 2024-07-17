@@ -2,24 +2,27 @@
 <div class="px-10 mt-2 bg-[#080808] max-w-[2560px]">
   <div class="flex gap-2" *ngIf="$tagSub | async as tags">
     @for (tag of tags.data; track $index) {
-    <button class="p-1 bg-slate-300 text-white">{{ tag.tagTitle }}</button>
+    <button class="p-1 rounded-lg text-white" (click)="filterBlog(tag.tagID)">
+      {{ tag.tagTitle }}
+    </button>
     }
-    <hr class="text-black" />
+    <button class="p-1 rounded-lg text-white" (click)="filterBlog(0)">
+      All
+    </button>
+    <hr class="text-[#353535]" />
   </div>
-  <div class="flex flex-row text-[#9b9ba8]">
+  <div class="flex flex-row text-[#9b9ba8] gap-4">
     <div
       class="w-[70%] flex flex-col gap-2 cursor-pointer"
       *ngIf="$blogSub | async as blogs"
     >
-      <h2 class="text-[2rem]">Educational</h2>
+      <h2 class="font-bold text-[2rem]">{{ currTag }}</h2>
 
       <h3 class="text-[1.5rem]">Featured</h3>
       <hr class="text-[#353535] mb-2" />
       <div class="flex gap-4">
         @for(feature of featureDisplay; track $index) {
-        <div
-          class="w-[50%] min-h-[480px] max-h-[540px] bg-[#353535] rounded-md cursor-default"
-        >
+        <div class="w-[50%] max-h-[540px] rounded-md cursor-default">
           <div class="relative">
             <img
               [src]="feature.imgSRC"
@@ -28,10 +31,11 @@
             />
             <span
               class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
-              >tagID</span
+              >{{ translateTag(feature.tagID) }}</span
             >
           </div>
           <div class="px-2">
+            <hr class="text-[#353535] mb-2" />
             <p>
               <span>{{ feature.author }} | {{ feature.blogCreated }}</span>
             </p>
@@ -53,10 +57,7 @@
       <hr class="text-[#353535] mb-2" />
       <div class="grid grid-cols-3 gap-4">
         @for (blog of blogDisplay; track $index) {
-        <div
-          (click)="readBlog(blog.blogID)"
-          class="min-h-[280px] bg-[#353535] rounded-md"
-        >
+        <div (click)="readBlog(blog.blogID)" class="rounded-md">
           <div class="relative">
             <img
               [src]="blog.imgSRC"
@@ -65,10 +66,12 @@
             />
             <span
               class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
-              >tagID</span
+              >{{ translateTag(blog.tagID) }}</span
             >
           </div>
           <div class="px-2">
+            <hr class="text-[#353535] mb-2" />
+
             <p>
               <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
             </p>
@@ -79,7 +82,29 @@
       </div>
     </div>
     <div class="w-[30%]">
-      <h4 class="text-lg font-bold">Latest</h4>
+      <h4 class="text-[1.5rem] font-bold">Latest</h4>
+      <hr class="text-[#353535] mb-2" />
+      <div class="flex flex-col gap-2 w-full">
+        @for(latest of latestDisplay; track $index) {
+        <div
+          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535]"
+          (click)="readBlog(latest.blogID)"
+        >
+          <div class="flex-1">
+            <small>{{ latest.blogCreated }}</small>
+            <h4 class="text-white">{{ latest.blogTitle }}</h4>
+            <p class="text-ellipsis overflow-hidden max-h-[24px]">
+              {{ latest.sumContent }}
+            </p>
+          </div>
+          <img
+            [src]="latest.imgSRC"
+            alt="img"
+            class="max-w-[80px] aspect-square flex-1"
+          />
+        </div>
+        }
+      </div>
     </div>
   </div>
 </div>

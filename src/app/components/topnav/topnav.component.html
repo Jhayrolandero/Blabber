@@ -1,7 +1,7 @@
-<div class="flex justify-between items-center px-10">
+<div class="flex justify-between items-center px-10 h-[80px]">
   <h4
     (click)="home()"
-    class="cursor-pointer text-white text-[1.25rem] font-bold"
+    class="cursor-pointer text-white text-[1.5rem] font-bold"
   >
     Blabber
   </h4>
@@ -10,7 +10,7 @@
     [matMenuTriggerFor]="menu"
     aria-label="Example icon-button with a menu"
   >
-    Profile
+    <i class="fa-solid fa-bars text-[1.25rem]"></i>
   </button>
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="dashboard()">

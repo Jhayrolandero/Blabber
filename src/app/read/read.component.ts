@@ -6,6 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
 import { TopnavComponent } from '../components/topnav/topnav.component';
+import { TranslatetagService } from '../services/translatetag.service';
 
 @Component({
   selector: 'app-read',
@@ -17,7 +18,8 @@ import { TopnavComponent } from '../components/topnav/topnav.component';
 export class ReadComponent {
  constructor(
   private route: ActivatedRoute,
-  private Request: RequestService
+  private Request: RequestService,
+  private translateService: TranslatetagService
 ) {}
 
 blogData!: Blog
@@ -37,5 +39,9 @@ $blogSub!: Subscription
  ngOnDestroy() {
   this.$blogSub.unsubscribe()
  }
+
+ translate(id: number) {
+  return this.translateService.getTagNameById(id)
+}
 
 }

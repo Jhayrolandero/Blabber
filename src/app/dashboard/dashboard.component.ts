@@ -6,6 +6,7 @@ import { RequestService } from '../services/request.service';
 import { ContentextractService } from '../services/contentextract.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslatetagService } from '../services/translatetag.service';
 interface BlogDisplay {
   sumContent: string
   blogTitle: string
@@ -14,6 +15,7 @@ interface BlogDisplay {
   imgSRC: string
   blogCreated: Date
   blogID: number
+  public: boolean
 }
 
 @Component({
@@ -30,7 +32,8 @@ export class DashboardComponent {
 
   constructor(
     private Request: RequestService,
-    private htmlContent: ContentextractService
+    private htmlContent: ContentextractService,
+    private translateService: TranslatetagService
   ) {}
 
   router = inject(Router)
@@ -47,7 +50,8 @@ export class DashboardComponent {
           blogTitle: x.blogTitle,
           imgSRC: firstImageSrc!,
           blogCreated: x.blogCreatedDate,
-          blogID: x.author_blogID
+          blogID: x.author_blogID,
+          public: x.public
         }
         this.blogDisplay.push(data)
       })
@@ -62,4 +66,7 @@ export class DashboardComponent {
     this.router.navigate(['blog'])
   }
 
+  translate(id: number) {
+    return this.translateService.getTagNameById(id)
+  }
 }

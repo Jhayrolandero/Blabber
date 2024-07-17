@@ -7,6 +7,7 @@ import { ReadComponent } from './read/read.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EditComponent } from './edit/edit.component';
 export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   // {path: "login", loadChildren: () => import('./login/login.component').then(m => m.LoginComponent)}
   {path: "login", component: LoginComponent},
   {path: "home", component: HomeComponent, canActivate: [authGuard]},

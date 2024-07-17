@@ -3,13 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { QuillModule } from 'ngx-quill'
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { TopnavComponent } from '../components/topnav/topnav.component';
-import { Observable } from 'rxjs';
+import { identity, Observable } from 'rxjs';
 import { TagRes } from '../interface/TagRes';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
 import { Blog, BlogRes } from '../interface/BlogRes';
 import { ContentextractService } from '../services/contentextract.service';
 import { Router } from '@angular/router';
+import { TranslatetagService } from '../services/translatetag.service';
 
 interface BlogDisplay {
   sumContent: string
@@ -32,14 +33,19 @@ export class HomeComponent {
 
   constructor(
     private Request: RequestService,
-    private htmlContent: ContentextractService
+    private htmlContent: ContentextractService,
+    private TagConvert: TranslatetagService
   ) {
 
   }
   // events: string[] = [];
   opened: boolean = true;
   blogDisplay: BlogDisplay[] = []
+  origDisplay: BlogDisplay[] = []
   featureDisplay: BlogDisplay[] = []
+  latestDisplay: BlogDisplay[] = []
+
+  currTag = "All"
   router = inject(Router);
 
   ngOnInit() {
@@ -57,10 +63,12 @@ export class HomeComponent {
             blogID: x.author_blogID
           }
           this.blogDisplay.push(data)
+          this.origDisplay.push(data)
         }
 
       })
-      this.getFeatureDisplay(this.blogDisplay, this.featureDisplay, 2)
+      this.latestDisplay = this.blogDisplay.sort((a, b) => new Date(b.blogCreated).getTime() - new Date(a.blogCreated).getTime());
+      this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!
     })
   }
 
@@ -68,17 +76,40 @@ export class HomeComponent {
     this.router.navigate(['read/', id])
   }
 
-  getFeatureDisplay(source: BlogDisplay[], destination: BlogDisplay[], count: number) {
+  translateTag(id: number) {
+    return this.TagConvert.getTagNameById(id)
+  }
+
+  getFeatureDisplay(source: BlogDisplay[], count: number) {
+    console.log(source.length)
     if (source.length < count) {
         console.error("Source array does not have enough items.");
         return;
     }
 
+    const data: BlogDisplay[] = []
     for (let i = 0; i < count; i++) {
         // Select a random index
         const randomIndex = Math.floor(Math.random() * source.length);
-        destination.push(source.splice(randomIndex, 1)[0]);
+        data.push(source.splice(randomIndex, 1)[0])
     }
+    return data;
+}
+
+filterBlog(id: number) {
+  if (id === 0) {
+    // Reset to original display
+    this.blogDisplay = [...this.origDisplay];  // Create a new copy of origDisplay
+    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
+    this.latestDisplay = [...this.origDisplay]; // Create a new copy of origDisplay for latest display
+  } else {
+    // Filter by tagID
+    this.blogDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter blogDisplay by tagID
+    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
+    this.latestDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter latestDisplay by tagID
+  }
+
+  this.currTag = this.translateTag(id)
 }
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
