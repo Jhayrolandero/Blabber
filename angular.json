@@ -28,9 +28,7 @@
               "@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.css"
             ],
-            "scripts": [
-              "../node_modules/quill/dist/quill.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

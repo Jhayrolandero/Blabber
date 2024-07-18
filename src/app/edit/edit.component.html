@@ -1,4 +1,4 @@
-<app-topnav></app-topnav>
+<!-- <app-topnav></app-topnav> -->
 <!-- <p>{{ blogForm.get("blogTitle")?.value }}</p> -->
 <div class="flex h-[95vh] justify-between" *ngIf="blogData">
   <div class="flex flex-col items-center w-[80%]">
@@ -8,12 +8,6 @@
         [formGroup]="blogForm"
         class="flex justify-center items-center"
       >
-        <!-- <input
-          type="text"
-          placeholder="Title"
-          class="h-[32px] w-full"
-          formControlName="blogTitle"
-        /> -->
         <div class="relative z-0 mb-5 group">
           <input
             formControlName="blogTitle"
