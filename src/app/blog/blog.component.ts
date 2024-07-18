@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TopnavComponent } from '../components/topnav/topnav.component';
 import { QuillModule } from 'ngx-quill';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { FormdataService } from '../services/formdata.service';
 import { RequestService } from '../services/request.service';
 import { Observable, Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { TagRes } from '../interface/TagRes';
 import { Tag } from '../interface/TagRes';
 import { Router } from '@angular/router';
+import { TranslatetagService } from '../services/translatetag.service';
 @Component({
   selector: 'app-blog',
   standalone: true,
@@ -18,65 +19,58 @@ import { Router } from '@angular/router';
 })
 export class BlogComponent {
 
+  blogForm: FormGroup;
+  blogFormData: FormData;
+  tags: string[] = []
   constructor(
-    private FormData: FormdataService,
-    private Request: RequestService
-  ) {}
-  blogForm = new FormGroup({
-    blogTitle: new FormControl('', [Validators.required]),
-    blogContent: new FormControl(''),
-    tagID: new FormControl(1, [Validators.required]),
-    public: new FormControl(0, [Validators.required])
-  })
+    private FormDataService: FormdataService,
+    private Request: RequestService,
+    private _fb: FormBuilder,
+    private Translate: TranslatetagService
+  ) {
+
+    this.blogForm = this._fb.group({
+      blogTitle: new FormControl('', [Validators.required]),
+      blogContent: new FormControl(''),
+      tagID: this._fb.array([]),
+      public: new FormControl(0, [Validators.required])
+    })
+
+    this.blogFormData = new FormData()
+  }
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
   text = ""
   router = inject(Router)
 
-  modules = {
-    imageDropAndPaste: {
-      handler: () => console.log('test')
-    },
-    blotFormatter: {
-      overlay: {
-        style: {
-          border: '1px solid white',
-        }
-      }
-    },
-    syntax: true,
-    toolbar: [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
+  selectTag(event: Event) {
+    const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
+    const selectElement = event.target as HTMLSelectElement;
 
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
+    if(this.tags.includes(selectElement.value)) return
+    formArray.push(new FormControl(selectElement.value))
 
-    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-    [{ 'font': [] }],
-    [{ 'align': [] }],
-
-    ['clean'],                                         // remove formatting button
-
-    ['link', 'image', 'video']
-  ]
-      }
-
-  ngOnInit() {
+    this.tags = formArray.value
+    console.log(formArray.value)
   }
 
-  selectTag(event : Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    console.log(selectElement.value);
+  translate(id: string) {
+    return this.Translate.getTagNameById(parseInt(id))
+  }
+
+  onSubmit() {
     this.blogForm.patchValue({
-      tagID: +selectElement.value
+      blogContent:this.text
     })
+
+
+    const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
+    this.blogFormData = this.FormDataService.formDatanalize(this.blogForm);
+    formArray.value.forEach((val: any) => {
+      this.blogFormData.append("tagID[]", val)
+    })
+
+    this.Request.postData<any>(this.blogFormData, 'blog').subscribe(res => console.log(res))
   }
 
   onPublic(event: Event) {
@@ -85,27 +79,5 @@ export class BlogComponent {
     this.blogForm.patchValue({
       public: inputElement.checked ? 1 : 0
     })
-  }
-  onSubmit() {
-    this.blogForm.patchValue({
-      blogContent:this.text
-    })
-
-    if(!this.blogForm.valid) return
-
-    console.log(this.blogForm.value)
-    const formData = this.FormData.formDatanalize(this.blogForm)
-
-    this.Request.postData<any>(formData, "blog").subscribe({
-      next: res => {
-        console.log(res)
-        this.router.navigate(['dashboard'])
-      },
-      error: err => {
-        alert(err)
-        this.router.navigate(['dashboard'])
-      }
-    })
-
   }
 }
