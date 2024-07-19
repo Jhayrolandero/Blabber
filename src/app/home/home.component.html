@@ -1,8 +1,11 @@
 <!-- <app-topnav></app-topnav> -->
-<div class="px-10 mt-2 bg-[#080808] max-w-[2560px]">
+<div class="mt-2 bg-[#080808] max-w-[2560px]">
   <div class="flex gap-2" *ngIf="$tagSub | async as tags">
     @for (tag of tags.data; track $index) {
-    <button class="p-1 rounded-lg text-white" (click)="filterBlog(tag.tagID)">
+    <button
+      class="p-1 rounded-lg text-white hover:font-bold transition-all"
+      (click)="filterBlog(tag.tagID)"
+    >
       {{ tag.tagTitle }}
     </button>
     }
@@ -22,12 +25,14 @@
       <hr class="text-[#353535] mb-2" />
       <div class="flex gap-4">
         @for(feature of featureDisplay; track $index) {
-        <div class="w-[50%] max-h-[540px] rounded-md cursor-default">
-          <div class="relative">
+        <div
+          class="max-w-[50%] rounded-lg cursor-default boxShadow transition-all hover:scale-[1.025]"
+        >
+          <div class="relative w-full aspect-video">
             <img
               [src]="feature.imgSRC"
               alt="img"
-              class="w-full aspect-video mb-2"
+              class="w-full aspect-video mb-2 rounded-tr-lg rounded-tl-lg"
               onerror="this.onerror=null; this.src='/assets/images.png'"
             />
             <span
@@ -35,17 +40,47 @@
               >{{ translateTag(feature.tagID) }}</span
             >
           </div>
+          <hr class="text-[#353535] mb-2" />
           <div class="px-2">
-            <hr class="text-[#353535] mb-2" />
             <small>
               <span>{{ feature.author }} | {{ feature.blogCreated }}</span>
             </small>
             <h5 class="text-[1.75rem] font-bold">{{ feature.blogTitle }}</h5>
+            <div class="mb-[2px] flex gap-2 flex-wrap">
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Entertainment</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Food</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+            </div>
             <p class="text-ellipsis overflow-hidden max-h-[40px]">
               {{ feature.sumContent }}
             </p>
             <button
-              class="text-[#ac8cfc] text-[1.25rem]"
+              class="text-[#ac8cfc] text-[1.2rem] font-bold"
               (click)="readBlog(feature.blogID)"
             >
               <span>Read Blog <i class="fa-solid fa-arrow-right"></i></span>
@@ -58,12 +93,15 @@
       <hr class="text-[#353535] mb-2" />
       <div class="grid grid-cols-3 gap-4">
         @for (blog of blogDisplay; track $index) {
-        <div (click)="readBlog(blog.blogID)" class="rounded-md">
+        <div
+          (click)="readBlog(blog.blogID)"
+          class="rounded-md boxShadow transition-all hover:scale-[1.025]"
+        >
           <div class="relative">
             <img
               [src]="blog.imgSRC"
               alt="imagelol"
-              class="w-full aspect-video mb-2"
+              class="w-full aspect-video mb-2 rounded-tr-md rounded-tl-md"
               onerror="this.onerror=null; this.src='/assets/images.png'"
             />
             <span
@@ -71,13 +109,43 @@
               >{{ translateTag(blog.tagID) }}</span
             >
           </div>
-          <div class="px-2">
-            <hr class="text-[#353535] mb-2" />
-
+          <hr class="text-[#353535] mb-2" />
+          <div class="px-2 py-1">
             <small>
               <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
             </small>
-            <h5 class="text-[1rem] font-bold">{{ blog.blogTitle }}</h5>
+            <h5 class="text-[1.25rem] font-bold">{{ blog.blogTitle }}</h5>
+
+            <div class="mt-[2px] flex gap-2 flex-wrap">
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Entertainment</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Food</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+              <span
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >Technology</span
+              >
+            </div>
           </div>
         </div>
         }
@@ -89,10 +157,10 @@
       <div class="flex flex-col gap-2 w-full">
         @for(latest of latestDisplay; track $index) {
         <div
-          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535]"
+          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
           (click)="readBlog(latest.blogID)"
         >
-          <div class="flex-1">
+          <div class="flex-1 px-2 py-1">
             <small>{{ latest.blogCreated }}</small>
             <h4 class="text-white">{{ latest.blogTitle }}</h4>
             <p class="text-ellipsis overflow-hidden max-h-[24px]">

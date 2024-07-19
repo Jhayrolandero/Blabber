@@ -29,11 +29,13 @@ export class EditComponent {
   blogData!: Blog
   $blogSub!: Subscription
   blogContent!: string
+  tags: string[] = []
+
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}?q=fetchBlog`).subscribe({
         next: res => {
-          console.log(res.data[0].blogContent)
+          console.log(res)
           this.blogData = res.data[0]
           this.blogContent = res.data[0].blogContent
 

@@ -1,24 +1,25 @@
-<!-- <app-topnav></app-topnav> -->
-<div class="px-20 min-h-[95vh]">
-  <div
-    class="shadow-lg px-2 border-r-2 rounded-md border-r-[#353535] border-l-2 border-l-[#353535] border-b-2 border-b-[#353535]"
-  >
-    <div class="px-[12px]">
-      <small class="border-[1px] px-2 py-1 border-white rounded-full">{{
-        translate(blogData.tagID)
-      }}</small>
-      <p class="text-[2rem] font-bold">{{ blogData.blogTitle }}</p>
-      <small class="text-[0.8rem]"
-        ><span class="font-bold">{{ blogData.authorName }}</span> /
-        {{ blogData.blogCreatedDate }}</small
-      >
-    </div>
-    <quill-view
-      [modules]="[]"
-      [content]="blogData.blogContent"
-      format="html"
-      theme="bubble"
-      class="text-[5rem] p-0 max-w-[70%]"
-    ></quill-view>
+@if(blogData !== undefined){ @if(blogData.public) {
+<div class="border-2 border-[#353535] rounded-lg boxShadow">
+  <div class="px-4 py-2">
+    <small class="border-2 px-2 py-1 border-[#353535] rounded-full">{{
+      translate(blogData.tagID)
+    }}</small>
+    <p class="text-[2rem] font-bold">{{ blogData.blogTitle }}</p>
+    <small class="text-[0.8rem]"
+      ><span class="font-bold">{{ blogData.authorName }}</span> /
+      {{ blogData.blogCreatedDate }}</small
+    >
   </div>
+  <quill-view
+    [modules]="[]"
+    [content]="blogData.blogContent"
+    format="html"
+    theme="bubble"
+    class="text-[5rem] p-0 max-w-[70%]"
+  ></quill-view>
 </div>
+} @else {
+<h4 class="text-center">That Content is set to private</h4>
+} } @else {
+<h4 class="text-center">Can't find the content ;(</h4>
+}

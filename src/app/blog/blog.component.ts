@@ -22,6 +22,7 @@ export class BlogComponent {
   blogForm: FormGroup;
   blogFormData: FormData;
   tags: string[] = []
+  showSelectTag: boolean = false
   constructor(
     private FormDataService: FormdataService,
     private Request: RequestService,
@@ -47,10 +48,25 @@ export class BlogComponent {
     const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
     const selectElement = event.target as HTMLSelectElement;
 
-    if(this.tags.includes(selectElement.value)) return
+    if(this.tags.includes(selectElement.value)) {
+      alert("Duplicate Tag!")
+      return
+    }
     formArray.push(new FormControl(selectElement.value))
 
     this.tags = formArray.value
+    this.showSelectTag = false
+    console.log(formArray.value)
+  }
+
+  removeTag(key: string) {
+    const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
+    const idx = formArray.value.findIndex((x : string) => x === key)
+
+    if(idx === -1) return
+
+    formArray.removeAt(idx)
+    this.tags = this.tags.filter(x => x !== key)
     console.log(formArray.value)
   }
 
@@ -62,8 +78,6 @@ export class BlogComponent {
     this.blogForm.patchValue({
       blogContent:this.text
     })
-
-
     const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
     this.blogFormData = this.FormDataService.formDatanalize(this.blogForm);
     formArray.value.forEach((val: any) => {
