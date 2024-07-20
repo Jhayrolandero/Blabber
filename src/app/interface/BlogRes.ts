@@ -5,6 +5,7 @@ export interface Blog {
   blogUpdatedDate: Date
   blogContent: string
   tagID: number
+  tags: string
   authorID: number
   authorName: string
   email: string

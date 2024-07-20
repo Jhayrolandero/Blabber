@@ -24,11 +24,14 @@ export class ReadComponent {
 
 blogData!: Blog
 $blogSub!: Subscription
+tagsArr: number[] = []
  ngOnInit() {
   this.route.params.subscribe(params => {
     this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}`).subscribe({
       next: res => {
+
         this.blogData = res.data[0]
+        this.tagsArr = res.data[0].tags.split(",").map(x => parseInt(x))
         console.log(this.blogData)
       },
       error: err => console.error(err)

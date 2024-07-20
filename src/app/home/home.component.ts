@@ -20,6 +20,7 @@ interface BlogDisplay {
   imgSRC: string
   blogCreated: Date
   blogID: number
+  tags: number[]
 }
 
 @Component({
@@ -52,6 +53,11 @@ export class HomeComponent {
     this.$blogSub.subscribe(res => {
       res.data.map(x => {
         if(x.public) {
+
+          if(x.tags !== null) {
+            console.log(x.tags.split(',').map(x => parseInt(x)))
+          }
+          console.log(typeof x.tags)
           const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
           const data: BlogDisplay = {
             sumContent: textContent!,
@@ -60,7 +66,8 @@ export class HomeComponent {
             blogTitle: x.blogTitle,
             imgSRC: firstImageSrc!,
             blogCreated: x.blogCreatedDate,
-            blogID: x.author_blogID
+            blogID: x.author_blogID,
+            tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
           }
           this.blogDisplay.push(data)
           this.origDisplay.push(data)

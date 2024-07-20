@@ -1,10 +1,14 @@
 @if(blogData !== undefined){ @if(blogData.public) {
 <div class="border-2 border-[#353535] rounded-lg boxShadow">
   <div class="px-4 py-2">
-    <small class="border-2 px-2 py-1 border-[#353535] rounded-full">{{
-      translate(blogData.tagID)
-    }}</small>
-    <p class="text-[2rem] font-bold">{{ blogData.blogTitle }}</p>
+    <div class="flex gap-2">
+      @for (item of tagsArr; track $index) {
+      <small class="border-2 px-2 py-1 border-[#353535] rounded-full">{{
+        translate(item)
+      }}</small>
+      }
+    </div>
+    <h2 class="text-[2rem] font-bold">{{ blogData.blogTitle }}</h2>
     <small class="text-[0.8rem]"
       ><span class="font-bold">{{ blogData.authorName }}</span> /
       {{ blogData.blogCreatedDate }}</small
