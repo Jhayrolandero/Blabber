@@ -16,6 +16,8 @@ interface BlogDisplay {
   blogCreated: Date
   blogID: number
   public: boolean
+  tags: number[]
+
 }
 
 @Component({
@@ -51,7 +53,8 @@ export class DashboardComponent {
           imgSRC: firstImageSrc!,
           blogCreated: x.blogCreatedDate,
           blogID: x.author_blogID,
-          public: x.public
+          public: x.public,
+          tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }
         this.blogDisplay.push(data)
       })

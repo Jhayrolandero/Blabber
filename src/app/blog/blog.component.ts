@@ -84,7 +84,16 @@ export class BlogComponent {
       this.blogFormData.append("tagID[]", val)
     })
 
-    this.Request.postData<any>(this.blogFormData, 'blog').subscribe(res => console.log(res))
+    this.Request.postData<any>(this.blogFormData, 'blog').subscribe({
+      next: res => {
+        alert("Published successfully!")
+        this.router.navigate(['dashboard'])
+      },
+      error: err => {
+        console.error(err)
+        alert(err)
+      }
+    });
   }
 
   onPublic(event: Event) {
