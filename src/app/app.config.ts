@@ -30,37 +30,6 @@ Quill.register({
  'formats/image': CustomImage
 });
 
-// const sanitizer = new DomSanitizer
-// const sanitizer = inject(DomSanitizer)
-
-// function imageHandler(dataUrl: string, type: string, imageData: QuillImageData) {
-//   imageData
-//     .minify({
-//       maxWidth: 320,
-//       maxHeight: 320,
-//       quality: 0.7,
-//     })
-//     .then((miniImageData) => {
-//       if (miniImageData instanceof QuillImageData) {
-//         const blob = miniImageData.toBlob();
-//         const file = miniImageData.toFile();
-
-//         console.log(`type: ${type}`);
-//         console.log(`dataUrl: ${dataUrl}`);
-//         console.log(`blob: ${blob}`);
-//         console.log(`file: ${file}`);
-
-//         image = {
-//           type,
-//           dataUrl,
-//           blobUrl: sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob)),
-//           file,
-//         };
-//       }
-//     });
-// }
-
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
 import { Blog, BlogRes } from '../interface/BlogRes';
 import { Observable, Subscription } from 'rxjs';
@@ -7,11 +7,16 @@ import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
 import { TopnavComponent } from '../components/topnav/topnav.component';
 import { TranslatetagService } from '../services/translatetag.service';
+import { BlogDisplay } from '../interface/BlogDisplay';
+import { ContentextractService } from '../services/contentextract.service';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormdataService } from '../services/formdata.service';
+import { CommentRes } from '../interface/CommentRes';
 
 @Component({
   selector: 'app-read',
   standalone: true,
-  imports: [QuillModule, CommonModule, TopnavComponent],
+  imports: [QuillModule, CommonModule, TopnavComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './read.component.html',
   styleUrl: './read.component.css'
 })
@@ -19,23 +24,60 @@ export class ReadComponent {
  constructor(
   private route: ActivatedRoute,
   private Request: RequestService,
-  private translateService: TranslatetagService
+  private translateService: TranslatetagService,
+  private htmlContent: ContentextractService,
+  private router: Router,
+  private FormDataService: FormdataService
 ) {}
 
+blogDisplay: BlogDisplay[] = []
 blogData!: Blog
 $blogSub!: Subscription
+readMoreSub!: Subscription
 tagsArr: number[] = []
+
+$comment: Observable<CommentRes> = this.Request.fetchData<CommentRes>('comment')
+
+commentForm = new FormGroup({
+  blogID: new FormControl(0, [Validators.required]),
+  commentContent: new FormControl('', [Validators.required])
+})
+
  ngOnInit() {
   this.route.params.subscribe(params => {
     this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}`).subscribe({
       next: res => {
-
         this.blogData = res.data[0]
         this.tagsArr = res.data[0].tags.split(",").map(x => parseInt(x))
-        console.log(this.blogData)
+        this.commentForm.patchValue({
+          blogID: res.data[0].blogID
+        })
       },
       error: err => console.error(err)
     })
+
+    this.readMoreSub = this.Request.fetchData<BlogRes>('blog?q=read').subscribe({
+      next: res => {
+        res.data.map(x => {
+          const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
+          const data: BlogDisplay = {
+            sumContent: textContent!,
+            author: x.authorName,
+            tagID: x.tagID,
+            blogTitle: x.blogTitle,
+            imgSRC: firstImageSrc!,
+            blogCreated: x.blogCreatedDate,
+            blogID: x.author_blogID,
+            public: x.public,
+            tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
+          }
+          this.blogDisplay.push(data)
+        })
+        // console.log(this.blogDisplay)
+      },
+      error: err => console.error(err)
+    })
+
   })
  }
 
@@ -46,5 +88,23 @@ tagsArr: number[] = []
  translate(id: number) {
   return this.translateService.getTagNameById(id)
 }
+
+readBlog(id: number) {
+  this.router.navigate(['read/', id]).then(() => {
+    window.location.reload();
+  });
+}
+
+onSubmit() {
+
+  if(!this.commentForm.valid) return
+
+  const Formdata = this.FormDataService.formDatanalize(this.commentForm)
+  this.Request.postData(Formdata, 'comment').subscribe({
+    next: res => console.log(res),
+    error: err => console.error(err)
+  })
+}
+
 
 }

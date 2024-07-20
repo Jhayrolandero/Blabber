@@ -33,7 +33,7 @@ export class BlogComponent {
     this.blogForm = this._fb.group({
       blogTitle: new FormControl('', [Validators.required]),
       blogContent: new FormControl(''),
-      tagID: this._fb.array([]),
+      tagID: this._fb.array([], [Validators.required]),
       public: new FormControl(0, [Validators.required])
     })
 
@@ -78,6 +78,9 @@ export class BlogComponent {
     this.blogForm.patchValue({
       blogContent:this.text
     })
+
+// console.log(this.blogForm.valid)
+    if(!this.blogForm.valid) return
     const formArray: FormArray = this.blogForm.get('tagID') as FormArray;
     this.blogFormData = this.FormDataService.formDatanalize(this.blogForm);
     formArray.value.forEach((val: any) => {

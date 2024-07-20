@@ -3,11 +3,11 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { QuillModule } from 'ngx-quill'
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { TopnavComponent } from '../components/topnav/topnav.component';
-import { identity, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TagRes } from '../interface/TagRes';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
-import { Blog, BlogRes } from '../interface/BlogRes';
+import { BlogRes } from '../interface/BlogRes';
 import { ContentextractService } from '../services/contentextract.service';
 import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
@@ -36,16 +36,20 @@ export class HomeComponent {
     private Request: RequestService,
     private htmlContent: ContentextractService,
     private TagConvert: TranslatetagService
-  ) {}
+  ) {
+  }
 
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog")
+  $read: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=read")
+  readSub!: Subscription
   blogSearch!: Subscription
   opened: boolean = true;
   blogDisplay: BlogDisplay[] = []
   origDisplay: BlogDisplay[] = []
   featureDisplay: BlogDisplay[] = []
   latestDisplay: BlogDisplay[] = []
+  readDisplay: BlogDisplay[] = []
   tags: number[] = []
 
   search = new FormGroup({
@@ -57,24 +61,27 @@ export class HomeComponent {
   router = inject(Router);
 
   ngOnInit() {
-    this.$blogSub.subscribe(res => this.formatDisplay(res))
+    this.$blogSub.subscribe(res => this.formatDisplay(res, false))
   }
 
   // ngOnDestroy() {
-  //   this.blogSearch.unsubscribe()
+  //   this
+  //   // this.blogSearch.unsubscribe()
   // }
 
-  formatDisplay(res: BlogRes) {
-    this.blogDisplay = []
-    this.origDisplay = []
-    this.featureDisplay = []
+  formatDisplay(res: BlogRes, readMore: boolean) {
+
+    if(readMore) {
+      this.readDisplay = []
+    } else {
+      this.blogDisplay = []
+      this.origDisplay = []
+      this.featureDisplay = []
+    }
+
     res.data.map(x => {
       if(x.public) {
 
-        if(x.tags !== null) {
-          console.log(x.tags.split(',').map(x => parseInt(x)))
-        }
-        console.log(typeof x.tags)
         const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
         const data: BlogDisplay = {
           sumContent: textContent!,
@@ -86,22 +93,34 @@ export class HomeComponent {
           blogID: x.author_blogID,
           tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }
-        this.blogDisplay.push(data)
-        this.origDisplay.push(data)
+
+        if(!readMore) {
+          this.blogDisplay.push(data)
+          this.origDisplay.push(data)
+        }
+
+        console.log(readMore)
+        if(readMore) {
+
+          this.readDisplay.push(data)
+        }
       }
 
     })
-    this.latestDisplay = this.blogDisplay.sort((a, b) => new Date(b.blogCreated).getTime() - new Date(a.blogCreated).getTime());
-    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!
+    if(!readMore) {
+      this.latestDisplay = this.blogDisplay.sort((a, b) => new Date(b.blogCreated).getTime() - new Date(a.blogCreated).getTime());
+      this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!
+    }
   }
   searchFilter() {
 
     const keyword = this.search.get('searchWord')?.value
-    // console.log(keyword)
+    this.readSub = this.$read.subscribe(res => this.formatDisplay(res, true))
     this.blogSearch = this.Request.fetchData<BlogRes>(`blog?s=${keyword}`).subscribe(res => {
-      this.formatDisplay(res)
+      this.formatDisplay(res, false)
       this.searchWord = keyword!
     })
+
   }
 
   readBlog(id: number) {
@@ -113,15 +132,18 @@ export class HomeComponent {
   }
 
   getFeatureDisplay(source: BlogDisplay[], count: number) {
-    console.log(source.length)
     if (source.length <= 0) {
         console.error("Source array does not have enough items.");
         return;
     }
 
     const data: BlogDisplay[] = []
-    console.log(source)
-    for (let i = 0; i < count; i++) {
+    let item = count
+    if(count > source.length) {
+      item = source.length
+    }
+
+    for (let i = 0; i < item; i++) {
         // Select a random index
         const randomIndex = Math.floor(Math.random() * source.length);
         data.push(source.splice(randomIndex, 1)[0])

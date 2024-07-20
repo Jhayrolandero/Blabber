@@ -52,12 +52,6 @@
 
       <div class="flex gap-2" *ngIf="$tagSub | async as tags">
         @for (tag of tags.data; track $index) {
-        <!-- <button
-          class="p-1 rounded-lg text-white hover:font-bold transition-all"
-          (click)="filterBlog(tag.tagID)"
-        >
-          {{ tag.tagTitle }}
-        </button> -->
         <label
           class="flex items-center space-x-2 cursor-pointer hover:font-bold transition-all"
         >
@@ -67,7 +61,9 @@
             [value]="tag.tagID"
             (click)="filterBlog($event)"
           />
-          <span class="peer-checked:text-[#ac8cfc]">{{ tag.tagTitle }}</span>
+          <span class="peer-checked:text-[#ac8cfc] peer-checked:font-bold">{{
+            tag.tagTitle
+          }}</span>
         </label>
         }
         <!-- <button class="p-1 rounded-lg text-white" (click)="filterBlog($event)">
@@ -152,8 +148,34 @@
       </div>
     </div>
     <div class="w-[30%] flex flex-col gap-4 sticky h-full">
-      <h4 class="text-[1.5rem] font-bold">Latest</h4>
+      <h4 class="text-[1.5rem] font-bold">
+        {{ searchWord ? "Read More" : "Latest" }}
+      </h4>
       <hr class="text-[#353535] mb-2" />
+      @if(searchWord) {
+      <div class="flex flex-col gap-2 w-full">
+        @for(read of readDisplay; track $index) {
+        <div
+          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
+          (click)="readBlog(read.blogID)"
+        >
+          <div class="flex-1 px-2 py-1">
+            <small>{{ read.blogCreated }}</small>
+            <h4 class="text-white">{{ read.blogTitle }}</h4>
+            <p class="text-ellipsis overflow-hidden max-h-[24px]">
+              {{ read.sumContent }}
+            </p>
+          </div>
+          <img
+            [src]="read.imgSRC"
+            alt="img"
+            class="max-w-[80px] aspect-square flex-1"
+            onerror="this.onerror=null; this.src='/assets/images.png'"
+          />
+        </div>
+        }
+      </div>
+      } @else {
       <div class="flex flex-col gap-2 w-full">
         @for(latest of latestDisplay; track $index) {
         <div
@@ -176,6 +198,7 @@
         </div>
         }
       </div>
+      }
     </div>
   </div>
 </div>

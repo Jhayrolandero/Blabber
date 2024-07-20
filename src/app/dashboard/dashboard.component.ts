@@ -17,7 +17,6 @@ interface BlogDisplay {
   blogID: number
   public: boolean
   tags: number[]
-
 }
 
 @Component({
