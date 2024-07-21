@@ -30,7 +30,7 @@ export class EditComponent {
     this.blogForm = this._fb.group({
       blogTitle: new FormControl('', [Validators.required]),
       blogContent: new FormControl(''),
-      tagID: this._fb.array([]),
+      tagID: this._fb.array([], [Validators.required]),
       public: new FormControl(0, [Validators.required])
     })
   }
@@ -139,10 +139,17 @@ export class EditComponent {
     })
   }
   onEdit() {
+
+    if(!this.blogContent) {
+      alert('Content is required!')
+      return
+    }
+
     this.blogForm.patchValue({
       blogContent: this.blogContent
     })
 
+    if(!this.blogForm.valid) return
     this.Request.putData(`blog/${this.blogData.blogID}`, this.blogForm).subscribe({
       next: res => {
         console.log(res)

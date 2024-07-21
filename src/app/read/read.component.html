@@ -64,9 +64,9 @@
         />
         <button
           type="submit"
-          class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="text-white absolute end-2.5 bottom-2.5 bg-[#ac8cfc] focus:ring-4 focus:outline-none rounded-lg text-sm px-4 py-2 font-bold"
         >
-          Search
+          Send
         </button>
       </div>
     </form>
@@ -85,21 +85,23 @@
   </div>
   <div class="flex flex-col gap-4">
     @for(comment of commentDisplay; track $index) {
-    <div class class="flex gap-4">
+    <div class class="flex gap-4 w-full">
       <img
         [src]="PORT + comment.authorImg"
         alt="profile"
         class="w-[40px] h-[40px] aspect-square rounded-full"
       />
-      <div class="max-w-[640px]">
+      <div class="flex-1">
         <div class="flex justify-between">
           <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          @if(userAuth()) {
           <button
+            *ngIf="profile.authorID == comment.authorID"
             mat-icon-button
             [matMenuTriggerFor]="menu"
             aria-label="Example icon-button with a menu"
           >
-            Menu
+            <i class="fa-solid fa-ellipsis"></i>
           </button>
           <mat-menu #menu="matMenu">
             <button
@@ -109,30 +111,33 @@
               <span>Delete</span>
             </button>
           </mat-menu>
+          }
         </div>
         <small class="text-[0.8rem]">{{ comment.commentDate }}</small>
-        <p>
+        <p class="max-w-[640px]">
           {{ comment.commentContent }}
         </p>
       </div>
     </div>
     } @for(comment of commentArr; track $index) {
-    <div class class="flex gap-4">
+    <div class class="flex gap-4 w-full">
       <img
         [src]="PORT + comment.authorImg"
         alt="profile"
         class="w-[40px] h-[40px] aspect-square rounded-full"
       />
       <!-- <div class="w-[40px] h-[40px] aspect-square rounded-full bg-white"></div> -->
-      <div class="max-w-[640px]">
+      <div class="flex-1">
         <div class="flex justify-between">
           <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          @if(userAuth()) {
           <button
+            *ngIf="profile.authorID == comment.authorID"
             mat-icon-button
             [matMenuTriggerFor]="menu"
             aria-label="Example icon-button with a menu"
           >
-            Menu
+            <i class="fa-solid fa-ellipsis"></i>
           </button>
           <mat-menu #menu="matMenu">
             <button
@@ -142,9 +147,10 @@
               <span>Delete</span>
             </button>
           </mat-menu>
+          }
         </div>
         <small>{{ comment.commentDate }}</small>
-        <p>
+        <p class="max-w-[640px]">
           {{ comment.commentContent }}
         </p>
       </div>

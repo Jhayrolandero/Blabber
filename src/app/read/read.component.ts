@@ -16,6 +16,7 @@ import { Comment } from '../interface/CommentRes';
 import { AuthService } from '../services/auth.service';
 import { PORT } from '../environment/environment';
 import {MatMenuModule} from '@angular/material/menu';
+import { Profile, ProfileRes } from '../interface/ProfileRes';
 
 @Component({
   selector: 'app-read',
@@ -42,6 +43,7 @@ $blogSub!: Subscription
 readMoreSub!: Subscription
 tagsArr: number[] = []
 
+profile!: Profile
 PORT = PORT
 commentDisplay: Comment[] = []
 commentArr: Comment[] = []
@@ -96,6 +98,10 @@ commentForm = new FormGroup({
       },
       error: err => console.error(err)
     })
+
+    if(this.userAuth()) {
+      this.Request.fetchData<ProfileRes>('profile').subscribe(res => this.profile = res.data[0])
+    }
 
   })
  }

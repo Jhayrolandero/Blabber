@@ -8,7 +8,7 @@
         >{{ translate(tag) }}
         <span
           (click)="removeTag(tag)"
-          class="rounded-full bg-white px-1 text-black font-bold"
+          class="rounded-full bg-white px-1 text-black font-bold cursor-pointer"
           >&#x58;</span
         ></small
       >
@@ -44,6 +44,9 @@
 
       } }
     </div>
+    <small class="text-red-500" *ngIf="blogForm.get('tagID')?.errors"
+      >*tag is missing</small
+    >
     <div class="w-full">
       <form
         action=""
@@ -67,6 +70,19 @@
           >
         </div>
       </form>
+      <div
+        *ngIf="
+          blogForm.get('blogTitle')?.invalid &&
+          (blogForm.get('blogTitle')?.dirty ||
+            blogForm.get('blogTitle')?.touched)
+        "
+      >
+        <p class="text-center">
+          <small class="text-red-500" *ngIf="blogForm.get('blogTitle')?.errors"
+            >*Title is missing</small
+          >
+        </p>
+      </div>
     </div>
     <div class="h-[80%] w-full">
       <quill-editor

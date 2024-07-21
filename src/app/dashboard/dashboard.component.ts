@@ -9,6 +9,17 @@ import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
 import { ProfileRes } from '../interface/ProfileRes';
 import { PORT } from '../environment/environment';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import { ProfileFormComponent } from './profile-form/profile-form.component';
+
 interface BlogDisplay {
   sumContent: string
   blogTitle: string
@@ -24,7 +35,7 @@ interface BlogDisplay {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [TopnavComponent, CommonModule],
+  imports: [TopnavComponent, CommonModule, ProfileFormComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -39,11 +50,17 @@ export class DashboardComponent {
     private translateService: TranslatetagService
   ) {}
 
+  readonly dialog = inject(MatDialog);
+
   PORT = PORT
   router = inject(Router)
   blogDisplay: BlogDisplay[] = []
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=author")
   $author: Observable<ProfileRes> = this.Request.fetchData<ProfileRes>("profile")
+
+  openDialog(): void {
+    this.dialog.open(ProfileFormComponent);
+  }
 
   ngOnInit() {
     this.$blogSub.subscribe(res => {

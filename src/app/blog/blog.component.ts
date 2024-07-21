@@ -75,9 +75,16 @@ export class BlogComponent {
   }
 
   onSubmit() {
+    if(!this.text) {
+      alert('Content is required!')
+      return
+    }
+
     this.blogForm.patchValue({
       blogContent:this.text
     })
+
+    console.log(this.blogForm.get('tagID')?.errors)
 
 // console.log(this.blogForm.valid)
     if(!this.blogForm.valid) return
