@@ -51,7 +51,7 @@ export class DashboardComponent {
           blogTitle: x.blogTitle,
           imgSRC: firstImageSrc!,
           blogCreated: x.blogCreatedDate,
-          blogID: x.author_blogID,
+          blogID: x.blogID,
           public: x.public,
           tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }

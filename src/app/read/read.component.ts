@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
 import { Blog, BlogRes } from '../interface/BlogRes';
@@ -12,6 +12,8 @@ import { ContentextractService } from '../services/contentextract.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormdataService } from '../services/formdata.service';
 import { CommentRes } from '../interface/CommentRes';
+import { Comment } from '../interface/CommentRes';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-read',
@@ -27,7 +29,8 @@ export class ReadComponent {
   private translateService: TranslatetagService,
   private htmlContent: ContentextractService,
   private router: Router,
-  private FormDataService: FormdataService
+  private FormDataService: FormdataService,
+  private AuthService: AuthService
 ) {}
 
 blogDisplay: BlogDisplay[] = []
@@ -36,7 +39,8 @@ $blogSub!: Subscription
 readMoreSub!: Subscription
 tagsArr: number[] = []
 
-$comment: Observable<CommentRes> = this.Request.fetchData<CommentRes>('comment')
+commentArr: Comment[] = []
+$comment!: Observable<CommentRes>
 
 commentForm = new FormGroup({
   blogID: new FormControl(0, [Validators.required]),
@@ -45,6 +49,7 @@ commentForm = new FormGroup({
 
  ngOnInit() {
   this.route.params.subscribe(params => {
+    this.$comment = this.Request.fetchData<CommentRes>(`comment/${params['id']}`)
     this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}`).subscribe({
       next: res => {
         this.blogData = res.data[0]
@@ -56,9 +61,11 @@ commentForm = new FormGroup({
       error: err => console.error(err)
     })
 
-    this.readMoreSub = this.Request.fetchData<BlogRes>('blog?q=read').subscribe({
+    this.readMoreSub = this.Request.fetchData<BlogRes>(`blog?q=read`).subscribe({
       next: res => {
         res.data.map(x => {
+
+          if(x.blogID == params['id']) return
           const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
           const data: BlogDisplay = {
             sumContent: textContent!,
@@ -67,7 +74,7 @@ commentForm = new FormGroup({
             blogTitle: x.blogTitle,
             imgSRC: firstImageSrc!,
             blogCreated: x.blogCreatedDate,
-            blogID: x.author_blogID,
+            blogID: x.blogID,
             public: x.public,
             tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
           }
@@ -80,6 +87,10 @@ commentForm = new FormGroup({
 
   })
  }
+
+ userAuth() {
+  return this.AuthService.isAuth()
+}
 
  ngOnDestroy() {
   this.$blogSub.unsubscribe()
@@ -95,14 +106,24 @@ readBlog(id: number) {
   });
 }
 
+toLogin(){
+  this.router.navigate(['login'])
+}
 onSubmit() {
 
   if(!this.commentForm.valid) return
 
+  console.log(this.commentForm.value)
   const Formdata = this.FormDataService.formDatanalize(this.commentForm)
-  this.Request.postData(Formdata, 'comment').subscribe({
-    next: res => console.log(res),
-    error: err => console.error(err)
+  this.Request.postData<CommentRes>(Formdata, 'comment').subscribe({
+    next: res => {
+      this.commentArr.push(res.data[0])
+      console.log(res)
+    },
+    error: err => {
+      console.error(err)
+      alert("Something went wrong!")
+    }
   })
 }
 

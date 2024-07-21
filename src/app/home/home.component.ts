@@ -56,12 +56,14 @@ export class HomeComponent {
     searchWord: new FormControl('')
   })
 
+  searchRes: BlogDisplay[] = []
+  origSearch: BlogDisplay[] = []
   searchWord: string = ''
   currTag = "All"
   router = inject(Router);
 
   ngOnInit() {
-    this.$blogSub.subscribe(res => this.formatDisplay(res, false))
+    this.$blogSub.subscribe(res => this.formatDisplay(res, false, false))
   }
 
   // ngOnDestroy() {
@@ -69,10 +71,13 @@ export class HomeComponent {
   //   // this.blogSearch.unsubscribe()
   // }
 
-  formatDisplay(res: BlogRes, readMore: boolean) {
+  formatDisplay(res: BlogRes, readMore: boolean, search: boolean) {
 
     if(readMore) {
       this.readDisplay = []
+    } else if (search){
+      this.searchRes = []
+      this.origSearch = []
     } else {
       this.blogDisplay = []
       this.origDisplay = []
@@ -90,7 +95,7 @@ export class HomeComponent {
           blogTitle: x.blogTitle,
           imgSRC: firstImageSrc!,
           blogCreated: x.blogCreatedDate,
-          blogID: x.author_blogID,
+          blogID: x.blogID,
           tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }
 
@@ -99,10 +104,13 @@ export class HomeComponent {
           this.origDisplay.push(data)
         }
 
-        console.log(readMore)
         if(readMore) {
-
           this.readDisplay.push(data)
+        }
+
+        if(search) {
+          this.searchRes.push(data)
+          this.origSearch.push(data)
         }
       }
 
@@ -115,9 +123,9 @@ export class HomeComponent {
   searchFilter() {
 
     const keyword = this.search.get('searchWord')?.value
-    this.readSub = this.$read.subscribe(res => this.formatDisplay(res, true))
+    this.readSub = this.$read.subscribe(res => this.formatDisplay(res, true, false))
     this.blogSearch = this.Request.fetchData<BlogRes>(`blog?s=${keyword}`).subscribe(res => {
-      this.formatDisplay(res, false)
+      this.formatDisplay(res, false, true)
       this.searchWord = keyword!
     })
 
@@ -166,14 +174,22 @@ export class HomeComponent {
       this.tags.splice(idx, 1)
     }
 
-    if(this.tags.length > 0) {
-      this.blogDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)) );
-      this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
-      this.latestDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)));
+    if(this.searchWord) {
+      if(this.tags.length > 0) {
+        this.searchRes = this.origSearch.filter(x => x.tags.some(y => this.tags.includes(y)) )
+      } else {
+        this.searchRes = [...this.origSearch]
+      }
     } else {
-      this.blogDisplay = [...this.origDisplay];
-      this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
-      this.latestDisplay = [...this.origDisplay];
+      if(this.tags.length > 0) {
+        this.blogDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)) );
+        this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+        this.latestDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)));
+      } else {
+        this.blogDisplay = [...this.origDisplay];
+        this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+        this.latestDisplay = [...this.origDisplay];
+      }
     }
   }
 }

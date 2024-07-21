@@ -4,3 +4,7 @@
 .boxShadow2 {
   box-shadow: 0px 0px 12px 3px #353535;
 }
+
+.ql-editor {
+  max-height: 100%;
+}
