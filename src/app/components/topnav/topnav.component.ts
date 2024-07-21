@@ -33,6 +33,6 @@ export class TopnavComponent {
 
   logout() {
     this.AuthService.flushToken()
-    this.router.navigate(['/'])
+    this.router.navigate([this.router.url]).then(() => window.location.reload())
   }
 }

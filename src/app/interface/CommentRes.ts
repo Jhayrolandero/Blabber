@@ -8,5 +8,7 @@ export interface Comment {
   commentID: number,
   commentContent: string,
   commentDate: Date,
-  authorName: string
+  authorName: string,
+  authorID: number,
+  authorImg: string
 }

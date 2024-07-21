@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuillModule } from 'ngx-quill';
 import { Blog, BlogRes } from '../interface/BlogRes';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, map, Observable, of, Subscription } from 'rxjs';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
 import { TopnavComponent } from '../components/topnav/topnav.component';
@@ -14,14 +14,17 @@ import { FormdataService } from '../services/formdata.service';
 import { CommentRes } from '../interface/CommentRes';
 import { Comment } from '../interface/CommentRes';
 import { AuthService } from '../services/auth.service';
+import { PORT } from '../environment/environment';
+import {MatMenuModule} from '@angular/material/menu';
 
 @Component({
   selector: 'app-read',
   standalone: true,
-  imports: [QuillModule, CommonModule, TopnavComponent, ReactiveFormsModule, FormsModule],
+  imports: [QuillModule, CommonModule, MatMenuModule, TopnavComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './read.component.html',
   styleUrl: './read.component.css'
 })
+
 export class ReadComponent {
  constructor(
   private route: ActivatedRoute,
@@ -39,8 +42,10 @@ $blogSub!: Subscription
 readMoreSub!: Subscription
 tagsArr: number[] = []
 
+PORT = PORT
+commentDisplay: Comment[] = []
 commentArr: Comment[] = []
-$comment!: Observable<CommentRes>
+// $comment!: Observable<CommentRes>
 
 commentForm = new FormGroup({
   blogID: new FormControl(0, [Validators.required]),
@@ -49,7 +54,15 @@ commentForm = new FormGroup({
 
  ngOnInit() {
   this.route.params.subscribe(params => {
-    this.$comment = this.Request.fetchData<CommentRes>(`comment/${params['id']}`)
+    this.Request.fetchData<CommentRes>(`comment/${params['id']}`).subscribe({
+      next: res=> {
+        res.data.map(x => this.commentDisplay.push(x))
+      },
+      error: err => {
+        console.error(err)
+        alert(err)
+      }
+    })
     this.$blogSub = this.Request.fetchData<BlogRes>(`blog/${params['id']}`).subscribe({
       next: res => {
         this.blogData = res.data[0]
@@ -80,7 +93,6 @@ commentForm = new FormGroup({
           }
           this.blogDisplay.push(data)
         })
-        // console.log(this.blogDisplay)
       },
       error: err => console.error(err)
     })
@@ -107,6 +119,7 @@ readBlog(id: number) {
 }
 
 toLogin(){
+  this.AuthService.setRedirectUrl(this.router.url)
   this.router.navigate(['login'])
 }
 onSubmit() {
@@ -125,6 +138,23 @@ onSubmit() {
       alert("Something went wrong!")
     }
   })
+}
+
+deleteComment(id: number, display: boolean) {
+this.Request.deleteData(`comment/${id}`).subscribe({
+  next: res => {
+    console.log(res)
+    if(display) {
+      this.commentDisplay =  this.commentDisplay.filter(x => x.commentID != id)
+    } else {
+      this.commentArr =  this.commentArr.filter(x => x.commentID != id)
+    }
+  },
+  error: err => {
+    console.error(err)
+    alert(err)
+  }
+})
 }
 
 

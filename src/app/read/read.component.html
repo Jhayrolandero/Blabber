@@ -83,12 +83,33 @@
     </div>
     }
   </div>
-  <div class="flex flex-col gap-4" *ngIf="$comment | async as comments">
-    @for(comment of comments.data; track $index) {
+  <div class="flex flex-col gap-4">
+    @for(comment of commentDisplay; track $index) {
     <div class class="flex gap-4">
-      <div class="w-[40px] h-[40px] aspect-square rounded-full bg-white"></div>
+      <img
+        [src]="PORT + comment.authorImg"
+        alt="profile"
+        class="w-[40px] h-[40px] aspect-square rounded-full"
+      />
       <div class="max-w-[640px]">
-        <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+        <div class="flex justify-between">
+          <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            Menu
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="deleteComment(comment.commentID, true)"
+            >
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
         <small class="text-[0.8rem]">{{ comment.commentDate }}</small>
         <p>
           {{ comment.commentContent }}
@@ -97,9 +118,31 @@
     </div>
     } @for(comment of commentArr; track $index) {
     <div class class="flex gap-4">
-      <div class="w-[40px] h-[40px] aspect-square rounded-full bg-white"></div>
+      <img
+        [src]="PORT + comment.authorImg"
+        alt="profile"
+        class="w-[40px] h-[40px] aspect-square rounded-full"
+      />
+      <!-- <div class="w-[40px] h-[40px] aspect-square rounded-full bg-white"></div> -->
       <div class="max-w-[640px]">
-        <h5 class="font-semibold">{{ comment.authorName }}</h5>
+        <div class="flex justify-between">
+          <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            Menu
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="deleteComment(comment.commentID, false)"
+            >
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
         <small>{{ comment.commentDate }}</small>
         <p>
           {{ comment.commentContent }}

@@ -7,6 +7,8 @@ import { ContentextractService } from '../services/contentextract.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
+import { ProfileRes } from '../interface/ProfileRes';
+import { PORT } from '../environment/environment';
 interface BlogDisplay {
   sumContent: string
   blogTitle: string
@@ -37,9 +39,12 @@ export class DashboardComponent {
     private translateService: TranslatetagService
   ) {}
 
+  PORT = PORT
   router = inject(Router)
   blogDisplay: BlogDisplay[] = []
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=author")
+  $author: Observable<ProfileRes> = this.Request.fetchData<ProfileRes>("profile")
+
   ngOnInit() {
     this.$blogSub.subscribe(res => {
       res.data.map(x => {
@@ -58,6 +63,7 @@ export class DashboardComponent {
         this.blogDisplay.push(data)
       })
     })
+
   }
 
   readBlog(id: number) {
