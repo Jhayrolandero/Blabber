@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { QuillModule } from 'ngx-quill'
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { TopnavComponent } from '../components/topnav/topnav.component';
-import { identity, Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TagRes } from '../interface/TagRes';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
-import { Blog, BlogRes } from '../interface/BlogRes';
+import { BlogRes } from '../interface/BlogRes';
 import { ContentextractService } from '../services/contentextract.service';
 import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
@@ -20,12 +20,13 @@ interface BlogDisplay {
   imgSRC: string
   blogCreated: Date
   blogID: number
+  tags: number[]
 }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [QuillModule, FormsModule, MatSidenavModule, TopnavComponent, CommonModule],
+  imports: [QuillModule, FormsModule, MatSidenavModule, TopnavComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -36,40 +37,98 @@ export class HomeComponent {
     private htmlContent: ContentextractService,
     private TagConvert: TranslatetagService
   ) {
-
   }
-  // events: string[] = [];
+
+  $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
+  $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog")
+  $read: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=read")
+  readSub!: Subscription
+  blogSearch!: Subscription
   opened: boolean = true;
   blogDisplay: BlogDisplay[] = []
   origDisplay: BlogDisplay[] = []
   featureDisplay: BlogDisplay[] = []
   latestDisplay: BlogDisplay[] = []
+  readDisplay: BlogDisplay[] = []
+  tags: number[] = []
 
+  search = new FormGroup({
+    searchWord: new FormControl('')
+  })
+
+  searchRes: BlogDisplay[] = []
+  origSearch: BlogDisplay[] = []
+  searchWord: string = ''
   currTag = "All"
   router = inject(Router);
 
   ngOnInit() {
-    this.$blogSub.subscribe(res => {
-      res.data.map(x => {
-        if(x.public) {
-          const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
-          const data: BlogDisplay = {
-            sumContent: textContent!,
-            author: x.authorName,
-            tagID: x.tagID,
-            blogTitle: x.blogTitle,
-            imgSRC: firstImageSrc!,
-            blogCreated: x.blogCreatedDate,
-            blogID: x.author_blogID
-          }
+    this.$blogSub.subscribe(res => this.formatDisplay(res, false, false))
+  }
+
+  // ngOnDestroy() {
+  //   this
+  //   // this.blogSearch.unsubscribe()
+  // }
+
+  formatDisplay(res: BlogRes, readMore: boolean, search: boolean) {
+
+    if(readMore) {
+      this.readDisplay = []
+    } else if (search){
+      this.searchRes = []
+      this.origSearch = []
+    } else {
+      this.blogDisplay = []
+      this.origDisplay = []
+      this.featureDisplay = []
+    }
+
+    res.data.map(x => {
+      if(x.public) {
+
+        const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
+        const data: BlogDisplay = {
+          sumContent: textContent!,
+          author: x.authorName,
+          tagID: x.tagID,
+          blogTitle: x.blogTitle,
+          imgSRC: firstImageSrc!,
+          blogCreated: x.blogCreatedDate,
+          blogID: x.blogID,
+          tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
+        }
+
+        if(!readMore) {
           this.blogDisplay.push(data)
           this.origDisplay.push(data)
         }
 
-      })
+        if(readMore) {
+          this.readDisplay.push(data)
+        }
+
+        if(search) {
+          this.searchRes.push(data)
+          this.origSearch.push(data)
+        }
+      }
+
+    })
+    if(!readMore) {
       this.latestDisplay = this.blogDisplay.sort((a, b) => new Date(b.blogCreated).getTime() - new Date(a.blogCreated).getTime());
       this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!
+    }
+  }
+  searchFilter() {
+
+    const keyword = this.search.get('searchWord')?.value
+    this.readSub = this.$read.subscribe(res => this.formatDisplay(res, true, false))
+    this.blogSearch = this.Request.fetchData<BlogRes>(`blog?s=${keyword}`).subscribe(res => {
+      this.formatDisplay(res, false, true)
+      this.searchWord = keyword!
     })
+
   }
 
   readBlog(id: number) {
@@ -81,37 +140,56 @@ export class HomeComponent {
   }
 
   getFeatureDisplay(source: BlogDisplay[], count: number) {
-    console.log(source.length)
-    if (source.length < count) {
+    if (source.length <= 0) {
         console.error("Source array does not have enough items.");
         return;
     }
 
     const data: BlogDisplay[] = []
-    for (let i = 0; i < count; i++) {
+    let item = count
+    if(count > source.length) {
+      item = source.length
+    }
+
+    for (let i = 0; i < item; i++) {
         // Select a random index
         const randomIndex = Math.floor(Math.random() * source.length);
         data.push(source.splice(randomIndex, 1)[0])
     }
     return data;
-}
-
-filterBlog(id: number) {
-  if (id === 0) {
-    // Reset to original display
-    this.blogDisplay = [...this.origDisplay];  // Create a new copy of origDisplay
-    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
-    this.latestDisplay = [...this.origDisplay]; // Create a new copy of origDisplay for latest display
-  } else {
-    // Filter by tagID
-    this.blogDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter blogDisplay by tagID
-    this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!; // Update feature display
-    this.latestDisplay = this.origDisplay.filter(x => x.tagID === id); // Filter latestDisplay by tagID
   }
 
-  this.currTag = this.translateTag(id)
-}
+  filterBlog(event: Event) {
 
-  $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
-  $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog")
+    const selectElement = event.target as HTMLSelectElement;
+
+    const currTag  = parseInt(selectElement.value)
+    if(!this.tags.includes(currTag)) {
+      this.tags.push(currTag)
+    } else {
+      const idx = this.tags.findIndex(x => x == currTag)
+
+      if(idx === -1) return
+
+      this.tags.splice(idx, 1)
+    }
+
+    if(this.searchWord) {
+      if(this.tags.length > 0) {
+        this.searchRes = this.origSearch.filter(x => x.tags.some(y => this.tags.includes(y)) )
+      } else {
+        this.searchRes = [...this.origSearch]
+      }
+    } else {
+      if(this.tags.length > 0) {
+        this.blogDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)) );
+        this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+        this.latestDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)));
+      } else {
+        this.blogDisplay = [...this.origDisplay];
+        this.featureDisplay = this.getFeatureDisplay(this.blogDisplay, 2)!;
+        this.latestDisplay = [...this.origDisplay];
+      }
+    }
+  }
 }

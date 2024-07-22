@@ -1,98 +1,228 @@
-<app-topnav></app-topnav>
-<div class="px-10 mt-2 bg-[#080808] max-w-[2560px]">
-  <div class="flex gap-2" *ngIf="$tagSub | async as tags">
-    @for (tag of tags.data; track $index) {
-    <button class="p-1 rounded-lg text-white" (click)="filterBlog(tag.tagID)">
-      {{ tag.tagTitle }}
-    </button>
-    }
-    <button class="p-1 rounded-lg text-white" (click)="filterBlog(0)">
-      All
-    </button>
-    <hr class="text-[#353535]" />
-  </div>
+<!-- <app-topnav></app-topnav> -->
+<div class="px-20 py-10">
   <div class="flex flex-row text-[#9b9ba8] gap-4">
     <div
       class="w-[70%] flex flex-col gap-2 cursor-pointer"
       *ngIf="$blogSub | async as blogs"
     >
-      <h2 class="font-bold text-[2rem]">{{ currTag }}</h2>
+      <!-- <h4 *ngIf="searchWord">You searched for: "{{ searchWord }}"</h4> -->
+      <!-- <h2 class="font-bold text-[2rem]">{{ currTag }}</h2> -->
+      <form class="w-full" [formGroup]="search" (submit)="searchFilter()">
+        <label
+          for="default-search"
+          class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white bg-[#ac8cfc]"
+          >Search</label
+        >
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+          >
+            <svg
+              class="w-4 h-4 text-gray-500 dark:text-gray-400"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="default-search"
+            class="w-full bg-transparent p-4 ps-10 text-sm border-0 text-white focus:rounded-lg focus:ring-0 border-b-2 border-[#353535]"
+            placeholder="Search for blog title"
+            formControlName="searchWord"
+            required
+          />
+          <button
+            type="submit"
+            class="text-white absolute end-2.5 bottom-2.5 bg-[#ac8cfc] focus:ring-4 focus:outline-none rounded-lg text-sm px-4 py-2 font-bold"
+          >
+            Search
+          </button>
+        </div>
+      </form>
 
-      <h3 class="text-[1.5rem]">Featured</h3>
+      <div class="flex gap-2" *ngIf="$tagSub | async as tags">
+        @for (tag of tags.data; track $index) {
+        <label
+          class="flex items-center space-x-2 cursor-pointer hover:font-bold transition-all"
+        >
+          <input
+            type="checkbox"
+            class="hidden peer"
+            [value]="tag.tagID"
+            (click)="filterBlog($event)"
+          />
+          <span class="peer-checked:text-[#ac8cfc] peer-checked:font-bold">{{
+            tag.tagTitle
+          }}</span>
+        </label>
+        }
+        <!-- <button class="p-1 rounded-lg text-white" (click)="filterBlog($event)">
+          All
+        </button> -->
+        <hr class="text-[#353535]" />
+      </div>
+      @if(searchWord){
+      <h4 *ngIf="searchWord">You searched for: "{{ searchWord }}"</h4>
+
+      @for(search of searchRes; track $index) {
+      <div
+        class="hover:scale-[1.025] hover:rounded-md boxShadow min-h-[240px] flex gap-2 cursor-pointer flex-between w-full transition-all peer mb-4"
+        (click)="readBlog(search.blogID)"
+      >
+        <div class="flex-1 px-2 py-1 flex flex-col gap-2">
+          <small>{{ search.author }} | {{ search.blogCreated }}</small>
+          <h4 class="text-white text-[1.25rem] font-bold">
+            {{ search.blogTitle }}
+          </h4>
+          <div class="flex gap-4">
+            <span
+              *ngFor="let item of search.tags"
+              class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+              >{{ translateTag(item) }}</span
+            >
+          </div>
+          <p class="text-ellipsis overflow-hidden max-h-[144px]">
+            {{ search.sumContent }}
+          </p>
+        </div>
+        <img
+          [src]="search.imgSRC"
+          alt="img"
+          class="max-w-[160px] aspect-square flex-1 peer-hover:rounded-br-md peer-hover:rounded-tr-md"
+          onerror="this.onerror=null; this.src='/assets/images.png'"
+        />
+      </div>
+
+      } @empty {
+      <h4 class="text-center">Nothing was found ;(</h4>
+      } } @else {
+      <h3 class="text-[1.5rem] font-bold">Featured</h3>
       <hr class="text-[#353535] mb-2" />
       <div class="flex gap-4">
         @for(feature of featureDisplay; track $index) {
-        <div class="w-[50%] max-h-[540px] rounded-md cursor-default">
-          <div class="relative">
+        <div
+          class="w-[50%] max-w-[50%] rounded-lg cursor-default boxShadow transition-all hover:scale-[1.025]"
+        >
+          <div class="relative w-full aspect-video">
             <img
               [src]="feature.imgSRC"
               alt="img"
-              class="w-full aspect-video mb-2"
+              class="w-full aspect-video mb-2 rounded-tr-lg rounded-tl-lg"
               onerror="this.onerror=null; this.src='/assets/images.png'"
             />
-            <span
-              class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
-              >{{ translateTag(feature.tagID) }}</span
-            >
           </div>
-          <div class="px-2">
-            <hr class="text-[#353535] mb-2" />
-            <p>
+          <hr class="text-[#353535] mb-2" />
+          <div class="px-2 flex flex-col gap-2">
+            <small>
               <span>{{ feature.author }} | {{ feature.blogCreated }}</span>
-            </p>
-            <p class="text-[2rem]">{{ feature.blogTitle }}</p>
+            </small>
+            <h5 class="text-[1.75rem] font-bold">{{ feature.blogTitle }}</h5>
+            <div class="flex gap-2 flex-wrap">
+              <span
+                *ngFor="let item of feature.tags"
+                class="rounded-full border-[2px] border-[#353535] text-[0.8rem] px-2 py-1 font-semibold"
+                >{{ translateTag(item) }}</span
+              >
+            </div>
             <p class="text-ellipsis overflow-hidden max-h-[40px]">
               {{ feature.sumContent }}
             </p>
             <button
-              class="text-[#ac8cfc] text-[1.25rem]"
+              class="text-[#ac8cfc] text-[1.2rem] font-bold self-end"
               (click)="readBlog(feature.blogID)"
             >
-              Read Blog
+              <span>Read Blog <i class="fa-solid fa-arrow-right"></i></span>
             </button>
           </div>
         </div>
+        } @empty {
+        <h4 class="font-bold text-[1.5rem]">Tune for more!</h4>
         }
       </div>
       <h2>Read More</h2>
       <hr class="text-[#353535] mb-2" />
       <div class="grid grid-cols-3 gap-4">
         @for (blog of blogDisplay; track $index) {
-        <div (click)="readBlog(blog.blogID)" class="rounded-md">
+        <div
+          (click)="readBlog(blog.blogID)"
+          class="rounded-md boxShadow transition-all hover:scale-[1.025]"
+        >
           <div class="relative">
             <img
               [src]="blog.imgSRC"
               alt="imagelol"
-              class="w-full aspect-video mb-2"
+              class="w-full aspect-video mb-2 rounded-tr-md rounded-tl-md"
               onerror="this.onerror=null; this.src='/assets/images.png'"
             />
-            <span
-              class="absolute top-0 left-0 bg-black opacity-80 text-white px-2 py-1"
-              >{{ translateTag(blog.tagID) }}</span
-            >
           </div>
-          <div class="px-2">
-            <hr class="text-[#353535] mb-2" />
-
-            <p>
+          <hr class="text-[#353535] mb-2" />
+          <div class="px-2 py-1">
+            <small>
               <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
-            </p>
-            <h4>{{ blog.blogTitle }}</h4>
+            </small>
+            <h5 class="text-[1.25rem] font-bold">{{ blog.blogTitle }}</h5>
+
+            <div class="mt-[2px] flex gap-2 flex-wrap">
+              <span
+                *ngFor="let item of blog.tags"
+                class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+                >{{ translateTag(item) }}</span
+              >
+            </div>
           </div>
+        </div>
+        } @empty {
+        <h4 class="font-bold text-[1.5rem]">Tune for more!</h4>
+        }
+      </div>
+      }
+    </div>
+    <div class="w-[30%] flex flex-col gap-4 sticky h-full">
+      <h4 class="text-[1.5rem] font-bold">
+        {{ searchWord ? "Read More" : "Latest" }}
+      </h4>
+      <hr class="text-[#353535] mb-2" />
+      @if(searchWord) {
+      <div class="flex flex-col gap-2 w-full">
+        @for(read of readDisplay; track $index) {
+        <div
+          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
+          (click)="readBlog(read.blogID)"
+        >
+          <div class="flex-1 px-2 py-1">
+            <small>{{ read.blogCreated }}</small>
+            <h4 class="text-white">{{ read.blogTitle }}</h4>
+            <p class="text-ellipsis overflow-hidden max-h-[24px]">
+              {{ read.sumContent }}
+            </p>
+          </div>
+          <img
+            [src]="read.imgSRC"
+            alt="img"
+            class="max-w-[80px] aspect-square flex-1"
+            onerror="this.onerror=null; this.src='/assets/images.png'"
+          />
         </div>
         }
       </div>
-    </div>
-    <div class="w-[30%]">
-      <h4 class="text-[1.5rem] font-bold">Latest</h4>
-      <hr class="text-[#353535] mb-2" />
+      } @else {
       <div class="flex flex-col gap-2 w-full">
         @for(latest of latestDisplay; track $index) {
         <div
-          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535]"
+          class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
           (click)="readBlog(latest.blogID)"
         >
-          <div class="flex-1">
+          <div class="flex-1 px-2 py-1">
             <small>{{ latest.blogCreated }}</small>
             <h4 class="text-white">{{ latest.blogTitle }}</h4>
             <p class="text-ellipsis overflow-hidden max-h-[24px]">
@@ -106,12 +236,12 @@
             onerror="this.onerror=null; this.src='/assets/images.png'"
           />
         </div>
+        } @empty {
+        <h4 class="font-bold text-[1.5rem]">Tune for more!</h4>
+
         }
       </div>
+      }
     </div>
   </div>
 </div>
-<!-- <quill-editor class="h-full" [(ngModel)]="text"></quill-editor>
-
-<button (click)="onClick()">Add</button>
-<quill-view [content]="text" theme="snow"></quill-view> -->

@@ -1,1 +1,19 @@
-<router-outlet></router-outlet>
+<div class="min-h-[100dvh] grid grid-rows-[auto_1fr_auto]">
+  <header>
+    <app-topnav></app-topnav>
+  </header>
+  <main class="max-w-[2560px]">
+    <router-outlet></router-outlet>
+  </main>
+  <footer
+    class="flex flex-col items-center justify-center py-10 border-t-2 border-[#353535]"
+  >
+    <h4>About Blabber</h4>
+    <small class="w-[60%] text-center">
+      Welcome to Blabber, where words flow freely and ideas never stop! From
+      tech trends to lifestyle tips, we cover it all with a unique twist. Join
+      our community and stay updated with the latest posts, discussions, and
+      exclusive content.
+    </small>
+  </footer>
+</div>

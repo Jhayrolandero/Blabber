@@ -19,12 +19,20 @@ export class TopnavComponent {
     this.router.navigate(['home'])
   }
 
+  login() {
+    this.router.navigate(['login'])
+  }
+
   dashboard() {
     this.router.navigate(['dashboard'])
   }
 
+  userAuth() {
+    return this.AuthService.isAuth()
+  }
+
   logout() {
     this.AuthService.flushToken()
-    this.router.navigate(['/'])
+    this.router.navigate([this.router.url]).then(() => window.location.reload())
   }
 }

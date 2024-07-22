@@ -1,18 +1,12 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
 import { authGuard } from './services/auth.guard';
-import { BlogComponent } from './blog/blog.component';
-import { ReadComponent } from './read/read.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { EditComponent } from './edit/edit.component';
+
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  // {path: "login", loadChildren: () => import('./login/login.component').then(m => m.LoginComponent)}
-  {path: "login", component: LoginComponent},
-  {path: "home", component: HomeComponent, canActivate: [authGuard]},
-  {path: "blog", component: BlogComponent, canActivate: [authGuard]},
-  {path: "read/:id", component: ReadComponent, canActivate: [authGuard]},
-  {path: "edit/:id", component: EditComponent, canActivate: [authGuard]},
-  {path: "dashboard", component: DashboardComponent, canActivate: [authGuard]}
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  {path: "login", loadComponent: () => import('./login/login.component').then(m => m.LoginComponent)},
+  {path: "home", loadComponent: () => import('./home/home.component').then(m => m.HomeComponent)},
+  {path: "blog", loadComponent: () => import('./blog/blog.component').then(m => m.BlogComponent), canActivate: [authGuard]},
+  {path: "read/:id", loadComponent: () => import('./read/read.component').then(m => m.ReadComponent)},
+  {path: "edit/:id", loadComponent: () => import('./edit/edit.component').then(m => m.EditComponent), canActivate: [authGuard]},
+  {path: "dashboard", loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard]}
 ];

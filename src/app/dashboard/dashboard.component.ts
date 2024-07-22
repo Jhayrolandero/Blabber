@@ -7,6 +7,19 @@ import { ContentextractService } from '../services/contentextract.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
+import { ProfileRes } from '../interface/ProfileRes';
+import { PORT } from '../environment/environment';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import { ProfileFormComponent } from './profile-form/profile-form.component';
+
 interface BlogDisplay {
   sumContent: string
   blogTitle: string
@@ -16,12 +29,13 @@ interface BlogDisplay {
   blogCreated: Date
   blogID: number
   public: boolean
+  tags: number[]
 }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [TopnavComponent, CommonModule],
+  imports: [TopnavComponent, CommonModule, ProfileFormComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -36,9 +50,18 @@ export class DashboardComponent {
     private translateService: TranslatetagService
   ) {}
 
+  readonly dialog = inject(MatDialog);
+
+  PORT = PORT
   router = inject(Router)
   blogDisplay: BlogDisplay[] = []
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=author")
+  $author: Observable<ProfileRes> = this.Request.fetchData<ProfileRes>("profile")
+
+  openDialog(): void {
+    this.dialog.open(ProfileFormComponent);
+  }
+
   ngOnInit() {
     this.$blogSub.subscribe(res => {
       res.data.map(x => {
@@ -50,12 +73,14 @@ export class DashboardComponent {
           blogTitle: x.blogTitle,
           imgSRC: firstImageSrc!,
           blogCreated: x.blogCreatedDate,
-          blogID: x.author_blogID,
-          public: x.public
+          blogID: x.blogID,
+          public: x.public,
+          tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }
         this.blogDisplay.push(data)
       })
     })
+
   }
 
   readBlog(id: number) {

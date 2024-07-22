@@ -6,6 +6,7 @@ import { RegisterFormComponent } from './register-form/register-form.component';
 import { FormdataService } from '../services/formdata.service';
 import { RequestService } from '../services/request.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 interface JWTRes {
   token: string;
@@ -24,7 +25,8 @@ export class LoginComponent {
   constructor(
     public dialog: MatDialog,
     private FormDataService: FormdataService,
-    private RequestService: RequestService
+    private RequestService: RequestService,
+    private AuthService: AuthService
   ){}
 
   loginForm = new FormGroup({
@@ -33,6 +35,10 @@ export class LoginComponent {
   })
 
   router = inject(Router);
+
+  home() {
+    this.router.navigate(['home'])
+  }
 
   submitForm() {
     console.log(this.loginForm.valid)
@@ -46,7 +52,8 @@ export class LoginComponent {
           expireDate.setTime(expireDate.getTime() + (1440 * 60 * 1000));
           document.cookie = `token=${res.token}; ${expireDate}; path=/`
 
-          this.router.navigate(['/home'])
+          this.router.navigate([this.AuthService.getRedirectUrl()])
+          this.AuthService.setRedirectUrl('home')
         } else {
           alert(res.message)
         }

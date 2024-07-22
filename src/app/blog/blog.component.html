@@ -1,19 +1,65 @@
-<app-topnav></app-topnav>
-<div class="flex h-[95vh] justify-between">
-  <div class="flex flex-col items-center w-[80%]">
-    <div class="w-[1148px]">
+<!-- <app-topnav></app-topnav> -->
+<div class="flex h-full">
+  <div class="flex flex-col items-center flex-1 px-20 py-10">
+    <div class="flex gap-2 flex-wrap">
+      @for(tag of tags; track $index) {
+      <small
+        class="px-2 border-[1px] border-white rounded-full py-1 font-semibold"
+        >{{ translate(tag) }}
+        <span
+          (click)="removeTag(tag)"
+          class="rounded-full bg-white px-1 text-black font-bold cursor-pointer"
+          >&#x58;</span
+        ></small
+      >
+      } @if(tags.length == 0) {
+      <select
+        class="text-white bg-black border-0 border-b-2 appearance-none focus:outline-none"
+        name="tag"
+        id="tags"
+        *ngIf="$tagSub | async as tags"
+        (change)="selectTag($event)"
+      >
+        <option disabled selected value>Add Tag +</option>
+        @for (tag of tags.data; track $index) {
+        <option [value]="tag.tagID">{{ tag.tagTitle }}</option>
+        }
+      </select>
+      } @else { @if(!showSelectTag) {
+      <button (click)="showSelectTag = !showSelectTag">+</button>
+
+      } @else {
+      <select
+        class="text-white bg-black border-0 border-b-2 appearance-none focus:outline-none"
+        name="tag"
+        id="tags"
+        *ngIf="$tagSub | async as tags"
+        (change)="selectTag($event)"
+      >
+        <option disabled selected value>Add Tag +</option>
+        @for (tag of tags.data; track $index) {
+        <option [value]="tag.tagID">{{ tag.tagTitle }}</option>
+        }
+      </select>
+
+      } }
+    </div>
+    <small class="text-red-500" *ngIf="blogForm.get('tagID')?.errors"
+      >*tag is missing</small
+    >
+    <div class="w-full">
       <form
         action=""
         [formGroup]="blogForm"
         class="flex justify-center items-center"
       >
-        <div class="relative z-0 mb-5 group">
+        <div class="relative z-0 mb-5 group w-full">
           <input
             formControlName="blogTitle"
             type="text"
             name="title"
             id="title"
-            class="block py-2.5 px-0 w-[240px] text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
           />
@@ -23,15 +69,27 @@
             >Title</label
           >
         </div>
-        <!-- <input
-          type="text"
-          placeholder="Title"
-          class="h-[32px] w-[90%] mx-auto"
-          formControlName="blogTitle"
-        /> -->
       </form>
+      <div
+        *ngIf="
+          blogForm.get('blogTitle')?.invalid &&
+          (blogForm.get('blogTitle')?.dirty ||
+            blogForm.get('blogTitle')?.touched)
+        "
+      >
+        <p class="text-center">
+          <small class="text-red-500" *ngIf="blogForm.get('blogTitle')?.errors"
+            >*Title is missing</small
+          >
+        </p>
+      </div>
     </div>
-    <quill-editor class="h-[90%] w-[70%]" [(ngModel)]="text"></quill-editor>
+    <div class="h-[80%] w-full">
+      <quill-editor
+        class="h-full text-white w-full"
+        [(ngModel)]="text"
+      ></quill-editor>
+    </div>
   </div>
   <div
     class="w-[20%] max-w-[200px] flex flex-col h-full shadow-xl px-2 py-1 gap-4 border-l-2 border-[#353535]"
@@ -42,17 +100,6 @@
     >
       Publish
     </button>
-    <select
-      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-      name="tag"
-      id="tags"
-      *ngIf="$tagSub | async as tags"
-      (change)="selectTag($event)"
-    >
-      @for (tag of tags.data; track $index) {
-      <option [value]="tag.tagID">{{ tag.tagTitle }}</option>
-      }
-    </select>
     <form action="" [formGroup]="blogForm">
       <label class="inline-flex items-center mb-5 cursor-pointer">
         <input

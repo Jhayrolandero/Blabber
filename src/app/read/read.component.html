@@ -1,22 +1,201 @@
-<app-topnav></app-topnav>
-<div class="px-20 min-h-[95vh]">
-  <div
-    class="shadow-lg px-2 border-r-2 rounded-md border-r-[#353535] border-l-2 border-l-[#353535] border-b-2 border-b-[#353535]"
-  >
-    <div class="px-[12px]">
-      <small class=" border-[1px] px-2 py-1 border-white rounded-full">{{ translate(blogData.tagID) }}</small>
-      <p class="text-[2rem] font-bold">{{ blogData.blogTitle }}</p>
+<div class="px-20 py-10">
+  @if(blogData !== undefined){ @if(blogData.public) {
+  <div class="border-2 border-[#353535] rounded-lg boxShadow">
+    <div class="px-4 py-2 flex flex-col gap-3">
+      <div class="flex gap-2">
+        @for (item of tagsArr; track $index) {
+        <small class="border-2 px-2 py-1 border-[#353535] rounded-full">{{
+          translate(item)
+        }}</small>
+        }
+      </div>
+      <h2 class="text-[2rem] font-bold">{{ blogData.blogTitle }}</h2>
       <small class="text-[0.8rem]"
-        ><span class="font-bold">{{ blogData.authorName }}</span> /
+        ><span class="font-bold">{{ blogData.authorName }}</span> |
         {{ blogData.blogCreatedDate }}</small
       >
     </div>
-    <quill-view
+    <quill-view-html
       [content]="blogData.blogContent"
       format="html"
       theme="snow"
-      [sanitize]="true"
-      class="text-[5rem] p-0"
-    ></quill-view>
+      class="max-w-[70%] h-[70%]"
+    ></quill-view-html>
   </div>
+  <div class="py-4">
+    <h4 class="text-[1.5rem] font-bold">Comments</h4>
+    <hr class="text-[#353535]" />
+  </div>
+  <div class="pb-4">
+    @if(userAuth()) {
+    <form class="mx-auto" [formGroup]="commentForm" (submit)="onSubmit()">
+      <label
+        for="default-search"
+        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+        >Search</label
+      >
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+        >
+          <svg
+            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+            />
+          </svg>
+        </div>
+        <input
+          type="search"
+          id="default-search"
+          class="block w-full p-4 ps-10 text-sm appearance-none bg-transparent border-b-2 border-[#353535]"
+          formControlName="commentContent"
+          placeholder="What's on your mind?"
+          required
+        />
+        <button
+          type="submit"
+          class="text-white absolute end-2.5 bottom-2.5 bg-[#ac8cfc] focus:ring-4 focus:outline-none rounded-lg text-sm px-4 py-2 font-bold"
+        >
+          Send
+        </button>
+      </div>
+    </form>
+    } @else {
+    <div class="bg-white rounded-sm text-black px-2 py-1">
+      <p>
+        <span class="underline cursor-pointer" (click)="toLogin()">Login</span>
+        or
+        <span class="underline cursor-pointer" (click)="toLogin()"
+          >Sign up</span
+        >
+        first to comment
+      </p>
+    </div>
+    }
+  </div>
+  <div class="flex flex-col gap-4">
+    @for(comment of commentDisplay; track $index) {
+    <div class class="flex gap-4 w-full">
+      <img
+        [src]="PORT + comment.authorImg"
+        alt="profile"
+        class="w-[40px] h-[40px] aspect-square rounded-full"
+      />
+      <div class="flex-1">
+        <div class="flex justify-between">
+          <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          @if(userAuth()) {
+          <button
+            *ngIf="profile.authorID == comment.authorID"
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            <i class="fa-solid fa-ellipsis"></i>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="deleteComment(comment.commentID, true)"
+            >
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+          }
+        </div>
+        <small class="text-[0.8rem]">{{ comment.commentDate }}</small>
+        <p class="max-w-[640px]">
+          {{ comment.commentContent }}
+        </p>
+      </div>
+    </div>
+    } @for(comment of commentArr; track $index) {
+    <div class class="flex gap-4 w-full">
+      <img
+        [src]="PORT + comment.authorImg"
+        alt="profile"
+        class="w-[40px] h-[40px] aspect-square rounded-full"
+      />
+      <!-- <div class="w-[40px] h-[40px] aspect-square rounded-full bg-white"></div> -->
+      <div class="flex-1">
+        <div class="flex justify-between">
+          <h5 class="font-semibold text-[1rem]">{{ comment.authorName }}</h5>
+          @if(userAuth()) {
+          <button
+            *ngIf="profile.authorID == comment.authorID"
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            <i class="fa-solid fa-ellipsis"></i>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="deleteComment(comment.commentID, false)"
+            >
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+          }
+        </div>
+        <small>{{ comment.commentDate }}</small>
+        <p class="max-w-[640px]">
+          {{ comment.commentContent }}
+        </p>
+      </div>
+    </div>
+    }
+  </div>
+  <div class="py-4">
+    <h4 class="text-[1.5rem] font-bold">Read More</h4>
+    <hr class="text-white" />
+  </div>
+  <div class="grid grid-cols-5 gap-4">
+    @for (blog of blogDisplay; track $index) {
+    <div
+      (click)="readBlog(blog.blogID)"
+      class="rounded-md boxShadow2 transition-all hover:scale-[1.025] cursor-pointer"
+    >
+      <div class="relative">
+        <img
+          [src]="blog.imgSRC"
+          alt="imagelol"
+          class="w-full aspect-video mb-2 rounded-tr-md rounded-tl-md"
+          onerror="this.onerror=null; this.src='/assets/images.png'"
+        />
+      </div>
+      <hr class="text-[#353535] mb-2" />
+      <div class="px-2 py-1">
+        <small>
+          <span>{{ blog.author }} | {{ blog.blogCreated }}</span>
+        </small>
+        <h5 class="text-[1.25rem] font-bold">{{ blog.blogTitle }}</h5>
+
+        <div class="mt-[2px] flex gap-2 flex-wrap">
+          <span
+            *ngFor="let item of blog.tags"
+            class="rounded-full border-[2px] border-[#353535] text-[0.7rem] px-2 py-1 font-semibold"
+            >{{ translate(item) }}</span
+          >
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <h4 class="text-center">That Content is set to private</h4>
+  } } @else {
+  <h4 class="text-center">Can't find the content ;(</h4>
+  }
 </div>
