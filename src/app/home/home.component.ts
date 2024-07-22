@@ -40,6 +40,7 @@ export class HomeComponent {
   }
 
   page = 1
+  morePage = true
   // Tag
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
 
@@ -75,6 +76,11 @@ export class HomeComponent {
   readMore() {
     this.Request.fetchData<BlogRes>(`blog?p=${++this.page}`).subscribe({
       next: res => {
+
+        if(res.data.length <= 0) {
+          this.morePage = false
+          return
+        }
         res.data.map(x => {
           if(x.public) {
             const data = this.formatBlog(x);
@@ -83,13 +89,14 @@ export class HomeComponent {
             this.origDisplay.push(data)
           }
         })
+
+        if(this.tags.length > 0) {
+          this.blogDisplay = this.origDisplay.filter(x => x.tags.some(y => this.tags.includes(y)) )
+        }
+
       }
     })
   }
-  // ngOnDestroy() {
-  //   this
-  //   // this.blogSearch.unsubscribe()
-  // }
 
   formatBlog(blog: Blog): BlogDisplay {
 
@@ -121,18 +128,6 @@ export class HomeComponent {
 
     res.data.map(x => {
       if(x.public) {
-
-        const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
-        // const data: BlogDisplay = {
-        //   sumContent: textContent!,
-        //   author: x.authorName,
-        //   tagID: x.tagID,
-        //   blogTitle: x.blogTitle,
-        //   imgSRC: firstImageSrc!,
-        //   blogCreated: x.blogCreatedDate,
-        //   blogID: x.blogID,
-        //   tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
-        // }
 
         const data = this.formatBlog(x);
 
@@ -196,11 +191,8 @@ export class HomeComponent {
     return data;
   }
 
-  filterBlog(event: Event) {
-
-    const selectElement = event.target as HTMLSelectElement;
-
-    const currTag  = parseInt(selectElement.value)
+  filterBlog(currTag: number) {
+    // currTag  = parseInt(selectElement.value)
     if(!this.tags.includes(currTag)) {
       this.tags.push(currTag)
     } else {
@@ -228,5 +220,11 @@ export class HomeComponent {
         this.latestDisplay = [...this.origDisplay];
       }
     }
+  }
+
+  filterBlogEvent(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const currTag  = parseInt(selectElement.value)
+    this.filterBlog(currTag);
   }
 }

@@ -62,7 +62,7 @@
             type="checkbox"
             class="hidden peer"
             [value]="tag.tagID"
-            (click)="filterBlog($event)"
+            (click)="filterBlogEvent($event)"
           />
           <span class="peer-checked:text-[#ac8cfc] peer-checked:font-bold">{{
             tag.tagTitle
@@ -192,10 +192,13 @@
         <h4 class="font-bold text-[1.5rem]">Tune for more!</h4>
         }
       </div>
-      }
+      } @if(!searchWord || !tags) { @if (morePage) {
       <p class="text-center" (click)="readMore()">Read more</p>
+      } @else {
+      <p>End of content</p>
+      } }
     </div>
-    <div class="w-[30%] flex flex-col gap-4 sticky h-full">
+    <div class="w-[30%] flex flex-col gap-4 sticky top-0 h-full overflow-auto">
       <h4 class="text-[1.5rem] font-bold">
         {{ searchWord ? "Read More" : "Latest" }}
       </h4>
@@ -204,6 +207,7 @@
       <div class="flex flex-col gap-2 w-full">
         @for(read of readDisplay; track $index) {
         <div
+          *ngIf="$index <= 7"
           class="max-h-[120px] flex gap-2 cursor-pointer flex-between w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
           (click)="readBlog(read.blogID)"
         >
@@ -224,10 +228,11 @@
         }
       </div>
       } @else {
-      <div class="flex flex-col gap-2 w-full">
-        @for(latest of latestDisplay; track $index) {
+      <div class="flex flex-col gap-2 w-full h-[100vh] sticky top-0">
+        @for(latest of latestDisplay; track $index; let count = $count) {
         <div
-          class="max-h-[120px] flex cursor-pointer w-full max-w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all"
+          *ngIf="$index <= 7"
+          class="max-h-[120px] flex cursor-pointer w-full max-w-full border-b-2 border-b-[#353535] hover:bg-[rgba(255,255,255,0.1)] transition-all sticky"
           (click)="readBlog(latest.blogID)"
         >
           <div class="flex-1 px-2 py-1 w-[80%]">
@@ -248,7 +253,6 @@
         </div>
         } @empty {
         <h4 class="font-bold text-[1.5rem]">Tune for more!</h4>
-
         }
       </div>
       }
