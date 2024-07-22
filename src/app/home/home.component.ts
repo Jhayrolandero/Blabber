@@ -7,7 +7,7 @@ import { Observable, Subscription } from 'rxjs';
 import { TagRes } from '../interface/TagRes';
 import { RequestService } from '../services/request.service';
 import { CommonModule } from '@angular/common';
-import { BlogRes } from '../interface/BlogRes';
+import { Blog, BlogRes } from '../interface/BlogRes';
 import { ContentextractService } from '../services/contentextract.service';
 import { Router } from '@angular/router';
 import { TranslatetagService } from '../services/translatetag.service';
@@ -39,8 +39,14 @@ export class HomeComponent {
   ) {
   }
 
+  page = 1
+  // Tag
   $tagSub: Observable<TagRes> = this.Request.fetchData<TagRes>("tag")
-  $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog")
+
+  // Home
+  $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>(`blog?p=${this.page}`)
+
+  // Read
   $read: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=read")
   readSub!: Subscription
   blogSearch!: Subscription
@@ -66,10 +72,39 @@ export class HomeComponent {
     this.$blogSub.subscribe(res => this.formatDisplay(res, false, false))
   }
 
+  readMore() {
+    this.Request.fetchData<BlogRes>(`blog?p=${++this.page}`).subscribe({
+      next: res => {
+        res.data.map(x => {
+          if(x.public) {
+            const data = this.formatBlog(x);
+
+            this.blogDisplay.push(data)
+            this.origDisplay.push(data)
+          }
+        })
+      }
+    })
+  }
   // ngOnDestroy() {
   //   this
   //   // this.blogSearch.unsubscribe()
   // }
+
+  formatBlog(blog: Blog): BlogDisplay {
+
+    const {textContent, firstImageSrc} =  this.htmlContent.extractContent(blog.blogContent)
+    return {
+      sumContent: textContent!,
+      author: blog.authorName,
+      tagID: blog.tagID,
+      blogTitle: blog.blogTitle,
+      imgSRC: firstImageSrc!,
+      blogCreated: blog.blogCreatedDate,
+      blogID: blog.blogID,
+      tags: blog.tags ? blog.tags.split(',').map(x => parseInt(x)) : [0]
+    }
+  }
 
   formatDisplay(res: BlogRes, readMore: boolean, search: boolean) {
 
@@ -88,16 +123,18 @@ export class HomeComponent {
       if(x.public) {
 
         const {textContent, firstImageSrc} =  this.htmlContent.extractContent(x.blogContent)
-        const data: BlogDisplay = {
-          sumContent: textContent!,
-          author: x.authorName,
-          tagID: x.tagID,
-          blogTitle: x.blogTitle,
-          imgSRC: firstImageSrc!,
-          blogCreated: x.blogCreatedDate,
-          blogID: x.blogID,
-          tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
-        }
+        // const data: BlogDisplay = {
+        //   sumContent: textContent!,
+        //   author: x.authorName,
+        //   tagID: x.tagID,
+        //   blogTitle: x.blogTitle,
+        //   imgSRC: firstImageSrc!,
+        //   blogCreated: x.blogCreatedDate,
+        //   blogID: x.blogID,
+        //   tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
+        // }
+
+        const data = this.formatBlog(x);
 
         if(!readMore) {
           this.blogDisplay.push(data)
