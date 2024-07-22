@@ -35,6 +35,7 @@ export const appConfig: ApplicationConfig = {
 
         ['clean'],                                         // remove formatting button
 
+        // ['image']
         ['link', 'image', 'video']
       ],
 

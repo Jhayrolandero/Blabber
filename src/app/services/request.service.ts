@@ -13,19 +13,19 @@ export class RequestService {
 
    //CRUD requests
   fetchData<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(PORT + '/blog_site_api/API/' + endpoint);
+    return this.http.get<T>(PORT + '/BlabberAPI/API/' + endpoint);
   }
 
   postData<T>(data: FormData, endpoint: string): Observable<T> {
-    return this.http.post<T>(PORT + '/blog_site_api/API/' + endpoint, data);
+    return this.http.post<T>(PORT + '/BlabberAPI/API/' + endpoint, data);
   }
 
   deleteData(endpoint: string) {
-    return this.http.delete<any>(PORT + '/blog_site_api/API/' + endpoint);
+    return this.http.delete<any>(PORT + '/BlabberAPI/API/' + endpoint);
   }
 
   putData(endpoint: string, data: FormGroup) {
-    return this.http.put<any>(PORT + '/blog_site_api/API/' + endpoint, data.getRawValue());
+    return this.http.put<any>(PORT + '/BlabberAPI/API/' + endpoint, data.getRawValue());
   }
 
 }
