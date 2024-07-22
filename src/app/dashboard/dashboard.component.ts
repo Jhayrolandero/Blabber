@@ -10,15 +10,10 @@ import { TranslatetagService } from '../services/translatetag.service';
 import { ProfileRes } from '../interface/ProfileRes';
 import { PORT } from '../environment/environment';
 import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
+  MatDialog
 } from '@angular/material/dialog';
 import { ProfileFormComponent } from './profile-form/profile-form.component';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 interface BlogDisplay {
   sumContent: string
@@ -35,7 +30,7 @@ interface BlogDisplay {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [TopnavComponent, CommonModule, ProfileFormComponent],
+  imports: [TopnavComponent, CommonModule, ProfileFormComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -55,6 +50,7 @@ export class DashboardComponent {
   PORT = PORT
   router = inject(Router)
   blogDisplay: BlogDisplay[] = []
+  origDisplay: BlogDisplay[] = []
   $blogSub: Observable<BlogRes> = this.Request.fetchData<BlogRes>("blog?q=author")
   $author: Observable<ProfileRes> = this.Request.fetchData<ProfileRes>("profile")
 
@@ -77,10 +73,31 @@ export class DashboardComponent {
           public: x.public,
           tags: x.tags ? x.tags.split(',').map(x => parseInt(x)) : [0]
         }
-        this.blogDisplay.push(data)
+        this.origDisplay.push(data)
       })
+      this.blogDisplay = this.origDisplay
     })
+  }
 
+
+  filterForm = new FormGroup({
+    word: new FormControl('')
+  })
+  filterSearch(event: Event) {
+
+    event.preventDefault();
+    
+    this.blogDisplay = [...this.origDisplay]
+    
+    const word = this.filterForm.get('word')?.value
+    
+    if (!word) {
+      console.log("2")
+      this.blogDisplay = [...this.origDisplay]
+    } else {
+      console.log("1")
+      this.blogDisplay = this.blogDisplay.filter(x => x.sumContent.toLowerCase().includes(word.toLowerCase()) || x.blogTitle.toLowerCase().includes(word.toLowerCase()))
+    }
   }
 
   readBlog(id: number) {

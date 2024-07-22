@@ -32,7 +32,7 @@ export class ProfileFormComponent {
     private FormDataSer: FormdataService
   ) {}
   // Change this
-  ORIGIN = 'blog_site_api'
+  ORIGIN = 'BlabberAPI'
   profiles: Image[] = [
     {
     profilePath: `/${this.ORIGIN}/API/../Assets/profile/1.png`,
